@@ -1,0 +1,60 @@
+.UpcomingMatches {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 840px;
+
+	font-size: 48px;
+	line-height: 64px;
+}
+
+.UpcomingMatches h2 {
+	text-align: center;
+	font-weight: 400;
+}
+
+.UpcomingMatches ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.UpcomingMatch {
+	display: block;
+	border: 1px solid white;
+	border-radius: 24px;
+	overflow: hidden;
+	width: 600px;
+	margin: 16px auto;
+	line-height: 64px;
+}
+
+.UpcomingMatch .line {
+	height: 64px;
+}
+
+.UpcomingMatch .line + .line {
+	border-top: 1px solid white;
+}
+
+.UpcomingMatch .line .score {
+	display: inline-block;
+	text-align: center;
+	width: 64px;
+	font-weight: 600;
+	float: left;
+}
+
+.UpcomingMatch .line .team {
+	display: inline-block;
+	padding: 0 16px;
+	font-weight: 500;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow-x: hidden;
+	width: 500px;
+}
+
+.UpcomingMatch .line:nth-of-type(1) .score { background-color: var(--left-color-trans); }
+.UpcomingMatch .line:nth-of-type(2) .score { background-color: var(--right-color-trans); }

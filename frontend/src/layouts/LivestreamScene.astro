@@ -1,0 +1,37 @@
+---
+import CommonBase from './CommonBase.astro';
+
+import ringImage from '../images/ring.png';
+
+const { title, class: className, nobg } = Astro.props;
+---
+
+<CommonBase title={title + ' - Livestream overlay'}>
+	<div id='livestream' class={className + (nobg ? ' nobg' : '')}>
+		{ nobg ? [] : <img id="background" alt="" src={ringImage} width="1920" /> }
+		<slot />
+	</div>
+</CommonBase>
+
+<style>
+#livestream:not(.nobg) {
+	position: absolute;
+	left: 0; right: 0; top: 0; bottom: 0;
+	background-color: #0d0d0f;
+}
+#background {
+	position: absolute;
+	left: 0; top: -64px;
+	width: 100%; height: 100%;
+	z-index: 0;
+
+	background: #151619;
+	filter: brightness(0.6);
+
+	transition: filter 300ms, opacity 300ms;
+}
+
+:global(.team-name) {
+	text-overflow: ellipsis;
+}
+</style>

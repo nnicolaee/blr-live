@@ -1,0 +1,22 @@
+.LiveScoreLine {
+	display: flex;
+	font-size: 72px;
+	width: 1420px;
+	line-height: 84px;
+	height: 84px;
+	font-weight: 600;
+	vertical-align: middle;
+
+	text-align: left;
+}
+
+.LiveScoreLine .score {
+	width: 64px;
+	margin: 0 32px;
+	text-align: center;
+	font-weight: 600;
+}
+
+.LiveScoreLine .name {
+	font-weight: 500;
+}

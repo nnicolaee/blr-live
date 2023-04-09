@@ -1,0 +1,39 @@
+#blr-logo-top {
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 560px;
+	filter: drop-shadow(0px 0px 40px #000000);
+
+	transition: top 300ms, width 300ms, opacity 300ms;
+}
+.state-title   #blr-logo-top { top: 50%; width: 900px; }
+.state-showoff #blr-logo-top { top: 180px; }
+
+.LiveRobot {
+	transition: transform 500ms;
+}
+.state-title .LiveRobot.side-left { transform: translateX(-100%); }
+.state-title .LiveRobot.side-right { transform: translateX(+100%); }
+
+.state-showoff .LiveRobot { transform: translateX(0); }
+
+#score-sep {
+	font-weight: 600;
+
+	text-align: center;
+	font-size: 144px;
+	line-height: 144px;
+	height: 144px;
+	vertical-align: middle;
+
+	position: absolute;
+	left: 50%; bottom: 20px;
+	transform: translate(-50%, -50%);
+	transition: opacity 500ms;
+	opacity: 1;
+}
+
+.state-title #score-sep {
+	opacity: 0;
+}

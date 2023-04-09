@@ -1,0 +1,51 @@
+.Scoreboard {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 840px;
+	text-align: center;
+	font-size: 48px;
+	line-height: 64px;
+}
+
+.Scoreboard h2 {
+	font-weight: 400;
+}
+
+.Scoreboard table {
+	border-collapse: separate;
+	border-spacing: 16px 0;
+	width: 100%;
+}
+
+.Scoreboard table tr > :nth-child(1) {
+	font-weight: 400;
+	width: 48px;
+}
+.Scoreboard table tr > :nth-child(2) {
+	font-weight: 700;
+	text-align: left;
+}
+.Scoreboard .team-name {
+	display: inline-block;
+	max-width: 462px;
+	max-height: 10px;
+	line-height: 95%;
+	text-overflow: 	ellipsis	;
+}
+
+.Scoreboard table tr > :nth-child(2) svg { /* medal */
+	margin-left: 16px;
+	width: 32px; height: 32px;
+}
+.Scoreboard table tr > :nth-child(3) {
+	width: 48px;
+	text-align: right;
+	font-weight: 600;
+}
+.Scoreboard table tr > :nth-child(4) {
+	font-weight: 400;
+	width: 48px;
+	text-align: right;
+	font-size: 0.7em;
+}

@@ -1,0 +1,8 @@
+---
+import LivestreamScene from '../../layouts/LivestreamScene.astro';
+import LivestreamScoreboardScene from './scoreboard.tsx';
+---
+
+<LivestreamScene title='Showoff'  >
+	<LivestreamScoreboardScene client:only="preact" />
+</LivestreamScene>

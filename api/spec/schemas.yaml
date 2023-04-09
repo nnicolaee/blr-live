@@ -1,0 +1,110 @@
+components:
+  schemas:
+    team:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Team name
+          example: Ba' zinga!
+        self:
+          type: string
+          description: URL of team resource
+          example: /team.php?name=ba-zinga
+      required:
+        - name
+        - self
+
+    match:
+      type: object
+      properties:
+        self:
+          type: string
+          description: URL of match resource
+          example: /stage/2023-int/match/3
+        team1:
+          $ref: '#/components/schemas/team'
+        team2:
+          $ref: '#/components/schemas/team'
+        score1:
+          type: number
+        score2:
+          type: number
+        status:
+          description: Match status is null if the match isn't over yet, otherwise it describes whether the winner is team1, team2, or the match was a draw.
+          type: string
+          nullable: true
+          enum:
+            - win1
+            - win2
+            - draw
+            - null
+          example: null
+      required:
+        - self
+        - team1
+        - team2
+        - score1
+        - score2
+        - status
+
+    bracket-match:
+      allOf:
+        - $ref: '#/components/schemas/match'
+        - type: object
+          properties:
+            round:
+              type: number
+              description: Round in which this match appears (left-to-right)
+            order:
+              type: number
+              description: Position within the round (top-to-bottom)
+            parents:
+              type: array
+              items:
+                type: string
+                description: URL as an identifier of parent match
+                example: /match.php?id=3
+
+    stage:
+      type: object
+      properties:
+        self:
+          description: URL of stage resource
+          type: string
+          example: /stage/2023-int
+        name:
+          type: string
+          example: 2023 International
+        year:
+          type: number
+          example: 2023
+        scoreboard:
+          description: List of all teams participating in this stage, along with score information.
+          type: array
+          items:
+            $ref: '#/components/schemas/scoreboard-item'
+
+    bracket-stage:
+      allOf:
+        - $ref: '#/components/schemas/stage'
+
+    scoreboard-item:
+      type: object
+      properties:
+        place:
+          type: number
+        team:
+          $ref: '#/components/schemas/teams'
+        score:
+          $ref: '#/components/schemas/playoff-score'
+
+    playoff-score:
+      type: object
+      properties:
+        score:
+          type: number
+          example: 6
+        tiebreaker:
+          type: number
+          example: -2

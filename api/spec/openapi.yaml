@@ -1,0 +1,184 @@
+openapi: 3.0.0
+info:
+  title: BattleLab Robotica live scoring API
+  version: 0.1.0
+
+servers:
+- url: http://localhost:1234/api
+  description: Local dev server
+- url: https://live.battlelab.ro/api
+  description: Production server
+
+securitySchemes:
+
+
+paths:
+  /teams.php:
+    get:
+      summary: Get a paginated list of teams
+      operationId: getTeams
+
+      responses:
+        '200':
+          description: Paginated list of teams
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    description: Total number of teams.
+                    type: number
+                    example: 123
+
+                  next:
+                    description: URL for the next page in the list.
+                    type: string
+                    nullable: true
+                    example: /teams.php?offset=90&limit=30
+
+                  prev:
+                    description: URL for the previous page in the list.
+                    type: string
+                    nullable: true
+                    example: /teams.php?offset=30&limit=30
+
+                  teams:
+                    description: List of teams in this page.
+                    type: array
+                    items:
+                      $ref: 'schemas.yaml#/components/schemas/team'
+        '400':
+          $ref: 'responses.yaml#/components/responses/BadRequest'
+
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: number
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 50
+
+  /team.php:
+    post:
+      summary: Create a team
+      operationId: createTeam
+
+      requestBody:
+        description: Information of team to be created
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+                - name
+        required: true
+
+      responses:
+        '201':
+          description: Team has been created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    description: URL of created team
+                    type: string
+                    example: /team.php?name=ba-zinga
+                required:
+                  - created
+
+        '401':
+          $ref: 'responses.yaml#/components/responses/Unauthorized'
+
+        '400':
+          $ref: 'responses.yaml#/components/responses/BadRequest'
+
+    get:
+      summary: Get a team's information
+      operationId: getTeam
+
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+            example: ba-zinga
+
+      responses:
+        '200':
+          description: Team information
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas.yaml#/components/schemas/team'
+
+        '404':
+          $ref: 'responses.yaml#/components/responses/NotFound'
+
+    put:
+      summary: Update a team's information
+      operationId: updateTeam
+
+    delete:
+      summary: Delete a team
+      operationId: deleteTeam
+
+  /current.php:
+    get:
+      summary: Get the current state of the competition
+      operationId: getCurrentStatus
+
+    put:
+      summary: Update the current state of the competition
+      operationId: updateCurrentStatus
+
+  /stages.php:
+    get:
+      summary: Get a list of all stages
+      operationId: getStages
+
+    post:
+      summary: Create a stage
+      operationId: createStage
+
+  /stage.php:
+    get:
+      summary: Get a stage's information
+      operationId: getStage
+
+    put:
+      summary: Update a stage's information
+      operationId: updateStage
+
+    delete:
+      summary: Delete a stage
+      operationId: deleteStage
+
+  /match.php:
+    get:
+      summary: Get a match's information
+      operationId: getMatch
+
+    post:
+      summary: Create a match
+      operationId: createMatch
+
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/query-stage'
+
+    put:
+      summary: Update a match's information
+      operationId: updateMatch
+
+    delete:
+      summary: Delete a match
+      operationId: deleteMatch

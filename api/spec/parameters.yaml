@@ -1,0 +1,9 @@
+components:
+  parameters:
+    query-stage:
+      in: query
+      name: stage
+      schema:
+        type: string
+        example: 2023-int
+      required: true

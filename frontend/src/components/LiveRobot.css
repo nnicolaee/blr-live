@@ -1,0 +1,71 @@
+.LiveRobot {
+	position: absolute;
+	top: 0; left: 0;
+	width: 832px;
+	padding-top: 320px;
+	padding-left: 64px;
+	padding-right: 64px;
+	padding-bottom: 400px;
+
+	font-size: 80px;
+
+	display: grid;
+	grid-gap: 48px 32px;
+}
+
+.LiveRobot img {
+	grid-area: img;
+	filter: drop-shadow(10px 10px var(--color)) drop-shadow(10px 0 var(--color)) drop-shadow(10px -10px var(--color)) drop-shadow(0 -10px var(--color)) drop-shadow(-10px -10px var(--color)) drop-shadow(-10px 0 var(--color)) drop-shadow(-10px 10px var(--color)) drop-shadow(0 10px var(--color)) drop-shadow(0 0 20px var(--color));
+}
+
+.LiveRobot.side-left {
+	padding-right: 1024px;
+	--color: var(--left-color);
+	grid-template-areas: "img img" "name score";
+	grid-template-columns: 1fr 128px;
+}
+
+.LiveRobot.side-right {
+	padding-left: 1024px;
+	--color: var(--right-color);
+	grid-template-areas: "img img" "score name";
+	grid-template-columns: 128px 1fr;
+}
+
+.LiveRobot.side-left * {
+	justify-self: end;
+}
+
+.LiveRobot.side-right img {
+	transform: scaleX(-1);
+}
+
+.LiveRobot .score {
+	grid-area: score;
+	width: 128px;
+	text-align: center;
+
+	font-weight: 600;
+	font-size: 144px;
+	line-height: 144px;
+	height: 144px;
+	vertical-align: middle;
+}
+
+.LiveRobot .name {
+	grid-area: name;
+
+	display: flex;
+	align-items: center;
+
+	font-weight: 500;
+	line-height: 72px;
+	height: 144px;
+	width: 100%;
+
+	word-break: break-word;
+}
+
+.LiveRobot.side-left .name {
+	justify-content: end;
+}

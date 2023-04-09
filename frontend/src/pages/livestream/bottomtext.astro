@@ -1,0 +1,17 @@
+---
+import LivestreamScene from '../../layouts/LivestreamScene.astro';
+import BottomBar from '../../components/BottomBar.tsx';
+---
+
+<LivestreamScene nobg title="Bottom bar" >
+	<BottomBar>
+		<span id="text"></span>
+	</BottomBar>
+</LivestreamScene>
+
+<script>
+	const urlSearchParams = new URLSearchParams(window.location.search);
+	const text = urlSearchParams.get('text');
+
+	document.querySelector("#text").innerText = text;
+</script>

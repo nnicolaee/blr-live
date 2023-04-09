@@ -1,0 +1,51 @@
+#left-robot, #right-robot {
+	transition: transform 500ms;
+}
+#left-robot { transform: translateX(-100vw); }
+#right-robot { transform: translateX(+100vw); }
+.state-winleft #left-robot,
+.state-winright #right-robot { transform: translateX(0); }
+
+#left-curtain, #right-curtain, #draw-curtain {
+	position: absolute;
+	left: 0; top: 0; width: 100vw; height: 100vh;
+	box-sizing: border-box;
+	z-index: -1;
+	transition: transform 500ms;
+	font-size: 100px;
+	vertical-align: middle;
+	text-align: center;
+	font-weight: 700;
+
+	text-shadow: 6px 6px 0 #000, -6px 6px 0 #000, 6px -6px 0 #000, -6px -6px 0 #000, 0 6px 0 #000, 0 -6px 0 #000, 6px 0 0 #000, -6px 0 0 #000;
+
+	padding: 5%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#left-curtain {
+	background: var(--left-color-trans);
+	color: var(--left-color);
+	transform: translateX(-100vw);
+	padding-left: 50%;
+}
+#right-curtain {
+	background: var(--right-color-trans);
+	color: var(--right-color);
+	transform: translateX(100vw);
+	padding-right: 50%;
+}
+
+#draw-curtain {
+	background: var(--draw-color-trans);
+	color: var(--draw-color);
+	transform: translateY(-100vh);
+}
+
+.state-winleft #left-curtain,
+.state-winright #right-curtain,
+.state-draw #draw-curtain {
+	transform: translateX(0);
+}

@@ -1,0 +1,22 @@
+services:
+  web:
+    image: blr-live
+    build: .
+    depends_on: [db]
+    ports:
+      - 3000:80
+    volumes:
+      - ./frontend/dist:/var/www/html
+      - ./api:/var/www/html/api:ro
+  db:
+    image: mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_USER: 'blrlive'
+      MYSQL_PASSWORD: '+R46jG5eMEv2DToJ'
+      MYSQL_DATABASE: 'blrlive'
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:

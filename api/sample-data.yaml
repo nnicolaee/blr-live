@@ -1,0 +1,110 @@
+teams:
+  muresan+emma-simina:
+    name: ATHOS
+
+  outlaws:
+    name: Bandit
+
+  cheetah:
+		name: Cheetah
+
+  madian:
+		name: DEFLECT
+
+  sorina.oros:
+		name: Floricica Dansatoare
+
+  relativy:
+		name: HIROSHIMA
+
+  stefanbia:
+		name: J.I.M.
+
+  andrei.ghighea:
+		name: Malcolm Sylas Edjouma Laouari
+
+  adivd15:
+		name: Nea Mulan V2
+
+  baragan30:
+		name: Shigoku Khazzan
+
+  shobolinsky:
+		name: Shobolinsky
+
+  shreddinger:
+		name: Shreddinger
+
+  bastion:
+		name: The Monolith
+
+  maxim.popusoi:
+		name: Tzanca Hurricane
+
+  wolf:
+		name: Wolf
+
+  mesterel:
+		name: XLR8
+
+stages:
+  2023 Group A:
+    year: 2023
+    type: playoff
+    scoreboard:
+    - place: 1
+      team: adivd15
+      score: 1
+      tiebreaker: 9
+      status: qualified
+
+    - place: 2
+      team: muresan+emma-simina
+      score: 0
+      tiebreaker: 7
+      status: participant
+
+    - place: 3
+      team: andrei.ghighea
+      score: 0
+      tiebreaker: -2
+      status: disqualified
+
+    matches:
+    - id: 69
+      team1: andrei.ghighea
+      team2: muresan+emma-simina
+      score1: 1
+      score2: 1
+      status: finished # because disqualified
+      games:
+      - time: 2023-05-20 11:32:10
+        status: win1
+      - time: 2023-05-20 11:33:23
+        status: draw
+      - time: 2023-05-20 11:35:02
+        status: win2
+
+    - id: 70
+      team1: muresan+emma-simina
+      team2: adivd15
+      score1: 1
+      score2: 1
+      status: upcoming
+      games:
+      - time: 2023-05-20 11:30:30
+        status: win2
+      - time: 2023-05-20 11:36:43
+        status: win1
+
+    - id: 71
+      team1: adivd15
+      team2: andrei.ghighea
+      score1: 2
+      score2: 0
+      status: finished # because disqualified
+      games:
+      - time: 2023-05-20 11:34:10
+        status: win1
+      - time: 2023-05-20 11:39:11
+        status: win1
