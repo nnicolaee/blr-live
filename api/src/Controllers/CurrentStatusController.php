@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BLRLive\Controllers;
 
 use Slim\Http\Response as Response;

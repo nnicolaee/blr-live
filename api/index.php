@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -76,69 +79,6 @@ StageController::on($app);
 */
 MatchController::on($app);
 
-
-// $app->get('/currentState', function(Request $req, Response $res, $args) {
-// 	return $res->withJson([
-// 		'stage' => Config::API_BASE_URL . '/stages/Demo 23w14',
-// 		'match' => Config::API_BASE_URL . '/matches/69'
-// 	]);
-// });
-
-// function teamBrief($username, $name) {
-// 	return [
-// 		'self' => Config::API_BASE_URL . '/teams/' . urlencode($username),
-// 		'username' => $username,
-// 		'name' => $name
-// 	];
-// }
-
-// $app->get('/stages/Demo 23w14', function(Request $req, Response $res, $args) {
-// 	return $res->withJson([
-// 		'self' => Config::API_BASE_URL . '/stages/Demo 23w14',
-// 		'name' => 'Demo 23w14',
-// 		'year' => 2023,
-// 		'type' => 'playoff',
-// 		'scoreboard' => [
-// 			[
-// 				'place' => 1,
-// 				'team' => teamBrief('test1', 'A.D.A.'),
-// 				'score' => 0,
-// 				'tiebreaker' => 0,
-// 				'status' => 'participant'
-// 			],
-// 			[
-// 				'place' => 2,
-// 				'team' => teamBrief('test2', 'Cezara_bot'),
-// 				'score' => 0,
-// 				'tiebreaker' => 0,
-// 				'status' => 'participant'
-// 			]
-// 		],
-// 		'matches' => [
-// 			[
-// 				'self' => Config::API_BASE_URL . '/matches/69',
-// 				'team1' => teamBrief('test1', 'A.D.A.'),
-// 				'team2' => teamBrief('test2', 'Cezara_bot'),
-// 				'score1' => 0,
-// 				'score2' => 0,
-// 				'status' => 'upcoming',
-// 				'games' => []
-// 			]
-// 		]
-// 	]);
-// });
-
-// $app->get('/matches/69', function(Request $req, Response $res, $args) {
-// 	return $res->withJson([
-// 		'self' => Config::API_BASE_URL . '/matches/69',
-// 		'team1' => teamBrief('test1', 'A.D.A.'),
-// 		'team2' => teamBrief('test2', 'Cezara_bot'),
-// 		'score1' => 0,
-// 		'score2' => 0,
-// 		'status' => 'upcoming',
-// 		'games' => []
-// 	]);
-// });
 $app->add(new Middlewares\TrailingSlash(false));
 
 $app->run();
