@@ -9,7 +9,7 @@ use Slim\Factory\AppFactory;
 use Slim\Exception\HttpSpecializedException;
 
 use BLRLive\Config;
-use BLRLive\Controllers\{ TeamController, CurrentStatusController, StageController, MatchController, SSEController };
+use BLRLive\Controllers\{ TeamController, CurrentStatusController, StageController, MatchController, SSEController, BracketController };
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -54,6 +54,7 @@ $errorMiddleware->setDefaultErrorHandler(function (
 $app->add(new Middlewares\TrailingSlash(false));
 
 foreach([
+    BracketController::class,
     CurrentStatusController::class,
     MatchController::class,
     SSEController::class,
