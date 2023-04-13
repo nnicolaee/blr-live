@@ -9,7 +9,7 @@ use Slim\Factory\AppFactory;
 use Slim\Exception\HttpSpecializedException;
 
 use BLRLive\Config;
-use BLRLive\Controllers\{ TeamController, CurrentStatusController, StageController, MatchController };
+use BLRLive\Controllers\{ TeamController, CurrentStatusController, StageController, MatchController, SSEController };
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -56,6 +56,7 @@ $app->add(new Middlewares\TrailingSlash(false));
 foreach([
     CurrentStatusController::class,
     MatchController::class,
+    SSEController::class,
     StageController::class,
     TeamController::class
 ] as $controllerClass)

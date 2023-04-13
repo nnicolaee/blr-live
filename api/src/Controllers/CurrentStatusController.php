@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use BLRLive\Config;
 use BLRLive\Models\CurrentStatus;
+use BLRLive\Models\LiveEvents;
 
 use BLRLive\REST\{Controller, HttpRoute};
 
@@ -28,16 +29,19 @@ class CurrentStatusController
 		if(isset($data['stage']) && is_string($data['stage'])) {
 			$currentStatus->stage = Stage::fromUrl($data['stage'])?->getId() or throw new HttpNotFoundException($req, 'Referenced stage does not exist');
 
+			LiveEvents::sendEvent('currentStatus', ['stage' => $data['stage']]);;
 		}
 
 		if(isset($data['match']) && is_string($data['match'])) {
 			$currentStatus->match = MMatch::fromUrl($data['match'])?->getId() or throw new HttpNotFoundException($req, 'Referenced match does not exist');
 
+			LiveEvents::sendEvent('currentStatus', ['match' => $data['match']]);;
 		}
 
 		if(isset($data['livestream']) && is_string($data['livestream'])) {
 			$currentStatus->livestream = $data['livestream'];
 
+			LiveEvents::sendEvent('currentStatus', ['livestream' => $data['livestream']]);;
 		}
 
 		$currentStatus->save();
