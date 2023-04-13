@@ -11,12 +11,21 @@ services:
   db:
     image: mysql
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_ROOT_PASSWORD: 'GAcyV9ncOwQALvDNzTEeppwBPcjzk8wo'
       MYSQL_USER: 'blrlive'
       MYSQL_PASSWORD: '+R46jG5eMEv2DToJ'
       MYSQL_DATABASE: 'blrlive'
     volumes:
       - dbdata:/var/lib/mysql
+  pma:
+    image: phpmyadmin
+    environment:
+      MYSQL_ROOT_PASSWORD: 'GAcyV9ncOwQALvDNzTEeppwBPcjzk8wo'
+      PMA_HOST: db
+    depends_on: [db]
+    ports:
+      - 3001:80
+
 
 volumes:
   dbdata:
