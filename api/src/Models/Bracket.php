@@ -23,7 +23,7 @@ class Bracket extends BaseModel
 
     public readonly int $id;
     public ?int $match;
-    public readonly ?Bracket $parent;
+    public readonly ?int $parent;
     public readonly array $children;
 
     private const MAX_DEPTH = 6; // Shouldn't ever have more than 64 teams / 6 rounds in the same bracket
@@ -63,7 +63,7 @@ class Bracket extends BaseModel
             return null;
         }
         $bracket->match = $r['match_id'];
-        $bracket->parent = null;
+        $bracket->parent = $r['parent'];
         $bracket->id = $id;
         $bracket->children = [];
 
@@ -93,7 +93,7 @@ class Bracket extends BaseModel
             $child = new Bracket();
             $child->id = $row['id'];
             $child->match = $row['match_id'];
-            $child->parent = $parent;
+            $child->parent = $parent->id;
             $child->children = Bracket::getTree($child, $db, $depth + 1);
 
             $children[] = $child;
