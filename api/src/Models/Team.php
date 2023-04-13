@@ -26,28 +26,22 @@ class Team extends BaseModel {
 		$team->name = $name;
 
 		$db = Database::connect();
-		$q = $db->prepare('insert into Teams (username, name) values (?, ?)');
-		$q->bind_param('ss', $username, $name);
-		$q->execute();
+		$db->execute_query('insert into Teams (username, name) values (?, ?)', [$username, $name]);
 		$db->commit();
 
 		return $team;
 	}
 
 	public static function getTotal() : int {
-		return Database::Connect()->query('select count(*) from Teams')->fetch_array()[0];
+		$db = Database::Connect();
+		return intval($db->query('select count(*) from Teams')->fetch_array()[0]);
 	}
 
 	public static function getPaginated(int $offset = 0, int $limit = 50) : array {
 		$db = Database::Connect();
-
+		$r = $db->execute_query('select username, name from Teams limit ? offset ?', [$limit, $offset]);
+		
 		$teams = [];
-
-		$q = $db->prepare('select username, name from Teams limit ? offset ?');
-		$q->bind_param('ii', $limit, $offset);
-		$q->execute();
-		$r = $q->get_result();
-
 		foreach($r as $teamRow) {
 			$teams[] = Team::fromRow($teamRow);
 		}
@@ -57,28 +51,20 @@ class Team extends BaseModel {
 
 	public static function get(string $username) : ?Team {
 		$db = Database::Connect();
-		$q = $db->prepare('select * from Teams where username = ?');
-		$q->bind_param('s', $username);
-
-		$q->execute();
-		$r = $q->get_result();
+		$r = $db->execute_query('select * from Teams where username = ?', [$username]);
 		
 		return Team::fromRow($r->fetch_assoc());
 	}
 
 	public function save() {
 		$db = Database::Connect();
-		$q = $db->prepare('update Teams set name = ? where username = ?');
-		$q->bind_param('ss', $this->name, $this->username);
-		$q->execute();
+		$db->execute_query('update Teams set name = ? where username = ?', [$this->name, $this->username]);
 		$db->commit();
 	}
 
 	public function delete() {
 		$db = Database::Connect();
-		$q = $db->prepare('delete from Teams where username = ?');
-		$q->bind_param('s', $this->username);
-		$q->execute();
+		$db->execute_query('delete from Teams where username = ?', [$this->username]);
 		$db->commit();
 	}
 
