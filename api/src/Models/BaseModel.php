@@ -14,16 +14,18 @@ abstract class BaseModel implements \JsonSerializable
         return $this->id;
     }
 
-    public function getUrl() : string
+    public function getUrl(): string
     {
         return static::$baseUrl . '/' . $this->getId();
     }
 
-    abstract public static function get(string $id) : ?BaseModel;
+    abstract public static function get(string $id): ?BaseModel;
 
-    public static function fromUrl(string $url) : ?BaseModel
+    public static function fromUrl(string $url): ?BaseModel
     {
-        if(!str_starts_with($url, static::baseUrl . '/')) return null;
+        if (!str_starts_with($url, static::baseUrl . '/')) {
+            return null;
+        }
 
         $id = substr($url, strlen(static::baseUrl . '/'));
         return static::get($id);
