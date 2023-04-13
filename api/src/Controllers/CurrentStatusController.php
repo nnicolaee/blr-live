@@ -10,39 +10,37 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use BLRLive\Config;
 use BLRLive\Models\CurrentStatus;
 
-class CurrentStatusController {
-	public static function currentStatusJson(CurrentStatus $currentStatus) {
-		return [
-			'stage' => $currentStatus->stage,
-			'match' => $currentStatus->match,
-			'livestream' => $currentStatus->livestream
-		];
+use BLRLive\REST\{Controller, HttpRoute};
+
+#[Controller('/currentStatus')]
+class CurrentStatusController
+{
+	#[HttpRoute('GET')]
+	public static function getCurrentStatus(Request $req, Response $res) {
+		return $res->withJson(CurrentStatus::get());
 	}
 
-	public static function on($app) {
-		$app->get('/currentStatus', function (Request $req, Response $res, $args) {
-			$currentStatus = CurrentStatus::get();
-			return $res->withJson(CurrentStatusController::currentStatusJson($currentStatus));
-		});
+	#[HttpRoute('PUT')]
+	public static function updateCurrentStatus(Request $req, Response $res) {
+		$data = $req->getParsedBody();
+		$currentStatus = CurrentStatus::get();
 
-		$app->put('/currentStatus', function (Request $req, Response $res, $args) {
-			$data = $req->getParsedBody();
-			$currentStatus = CurrentStatus::get();
+		if(isset($data['stage']) && is_string($data['stage'])) {
+			$currentStatus->stage = Stage::fromUrl($data['stage'])?->getId() or throw new HttpNotFoundException($req, 'Referenced stage does not exist');
 
-			if(is_string($data['stage'])) {
-				$currentStatus->stage = StageController::urlStage($data['stage']) or throw new HttpNotFoundException($req, 'Referenced stage does not exist');
-			}
+		}
 
-			if(is_string($data['match'])) {
-				$currentStatus->match = MatchController::urlMatch($data['match']) or throw new HttpNotFoundException($req, 'Referenced match does not exist');
-			}
+		if(isset($data['match']) && is_string($data['match'])) {
+			$currentStatus->match = MMatch::fromUrl($data['match'])?->getId() or throw new HttpNotFoundException($req, 'Referenced match does not exist');
 
-			if(is_string($data['livestream'])) {
-				$currentStatus->livestream = $data['livestream'];
-			}
+		}
 
-			$currentStatus->save();
-			return $res->withJson(CurrentStatusController::currentStatusJson($currentStatus));
-		});
+		if(isset($data['livestream']) && is_string($data['livestream'])) {
+			$currentStatus->livestream = $data['livestream'];
+
+		}
+
+		$currentStatus->save();
+		return $res->withJson($currentStatus);
 	}
 }

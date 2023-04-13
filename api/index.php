@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 use Slim\Factory\AppFactory;
 use Slim\Exception\HttpSpecializedException;
 
@@ -50,38 +51,33 @@ $errorMiddleware->setDefaultErrorHandler(function (
     return $res->withStatus($code)->withJson($payload);
 });
 
-/*
-[X] getTeams
-[X] createTeam
-[X] getTeam
-[x] updateTeam
-[X] deleteTeam
-*/
-TeamController::on($app);
-
-/*
-[x] getCurrentStatus
-[x] updateCurrentStatus
-*/
-CurrentStatusController::on($app);
-
-/*
-[ ] getStages
-[ ] createStage
-[ ] getStage
-[ ] updateStage
-[ ] deleteStage
-*/
-StageController::on($app);
-
-/*
-[ ] getMatch
-[ ] createMatch
-[ ] updateMatch
-[ ] deleteMatch
-*/
-MatchController::on($app);
-
 $app->add(new Middlewares\TrailingSlash(false));
+
+foreach([
+    CurrentStatusController::class,
+    MatchController::class,
+    StageController::class,
+    TeamController::class
+] as $controllerClass)
+{
+    $classReflection = new ReflectionClass($controllerClass);
+    //DBG: var_dump($classReflection);
+
+    [$route] = $classReflection->getAttributes('BLRLive\REST\Controller')[0]->getArguments() + [''];
+
+    // Register controllers' routes based on their attributes
+    $app->group($route, function (RouteCollectorProxy $group) use ($classReflection, $route) {
+        foreach($classReflection->getMethods(ReflectionMethod::IS_STATIC) as $methodReflection)
+        {
+            $attrs = $methodReflection->getAttributes('BLRLive\REST\HttpRoute');
+            if(!$attrs) continue;
+            if([$method, $pattern] = $attrs[0]->getArguments() + ['GET', ''])
+            {
+                //DBG: echo "REGISTERED: $method $route$pattern -> " . $classReflection->getName() . "::" . $methodReflection->name . "\n";
+                $group->map([$method], $pattern ?? '', [$classReflection->getName(), $methodReflection->name]);
+            }
+        }
+    });
+}
 
 $app->run();

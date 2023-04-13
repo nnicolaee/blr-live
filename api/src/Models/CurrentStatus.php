@@ -7,21 +7,30 @@ namespace BLRLive\Models;
 /*
 
 create table CurrentCompetitionStatus (
-	stage varchar(50) references Stages(name) not null,
-	match int references Matches(id) not null,
-	livestream_url varchar(50)
+	stage varchar(50) null,
+	match_id int null,
+	livestream_url varchar(50) null,
+
+	foreign key (stage) references Stages(name) on delete set null,
+	foreign key (match_id) references Matches(id) on delete set null
 );
+
+insert into CurrentCompetitionStatus values ('Development', 69, null);
 
 */
 
-class CurrentStatus {
-	public string $stage;
-	public int $match;
-	public string $livestream;
+class CurrentStatus extends BaseModel {
+    protected static string $baseUrl = \BLRLive\Config::API_BASE_URL . "/currentStatus";
 
-	public static function get() : CurrentStatus {
+	public ?string $stage;
+	public ?int $match;
+	public ?string $livestream;
+
+	public function getId() { return null; }
+
+	public static function get(#[Unused] string $id) : CurrentStatus {
 		$db = Database::connect();
-		[ $stage, $match, $livestream ] = $db->query('select stage, match, livestream_url from CurrentCompetitionStatus')->fetch_array();
+		[ $stage, $match, $livestream ] = $db->query('select stage, match_id, livestream_url from CurrentCompetitionStatus')->fetch_array();
 		$db->close();
 
 		$currentStatus = new CurrentStatus;
@@ -33,8 +42,16 @@ class CurrentStatus {
 
 	public function save() {
 		$db = Database::connect();
-		$stmt = $db->prepare('update CurrentStatus set stage = ?, match = ?, livestream_url = ?');
-		$stmt->bind_param('sis', $this->stage, $this->match, $this->livestream);
-		$stmt->execute();
+		$db->execute_query('update CurrentCompetitionStatus set stage = ?, match_id = ?, livestream_url = ?', [$this->stage, $this->match, $this->livestream]);
+		$db->commit();
+	}
+
+	public function jsonSerialize() : array
+	{
+		return [
+			'stage' => $this->stage,
+			'match' => $this->match,
+			'livestream' => $this->livestream,
+		];
 	}
 }

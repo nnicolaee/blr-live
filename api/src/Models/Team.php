@@ -13,7 +13,9 @@ create table Teams (
 
 */
 
-class Team {
+class Team extends BaseModel {
+    protected static string $baseUrl = \BLRLive\Config::API_BASE_URL . "/teams";
+
 	public readonly string $username;
 	public string $name;
 
@@ -88,5 +90,14 @@ class Team {
 		$team->name = $row['name'];
 
 		return $team;
+	}
+
+	public function jsonSerialize() : array
+	{
+		return [
+			'self' => $this->getUrl(),
+			'username' => $this->username,
+			'name' => $this->name
+		];
 	}
 }
