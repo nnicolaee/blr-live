@@ -29,11 +29,16 @@ $errorMiddleware->setDefaultErrorHandler(function (
     $logger?->error($exception->getMessage());
 
     $payload = ['error' => $exception->getMessage()];
+    $code = $exception->getCode();
 
     $res = $app->getResponseFactory()->createResponse();
     
-    if(!($exception instanceof HttpSpecializedException) && !$displayErrorDetails) { // censor unknown error messages if not in dev
-    	$payload = ['error' => 'Unexpected error. If you see this, please contact the developers :)'];
+    if(!($exception instanceof HttpSpecializedException)) {
+        $code = 500; // don't send non-HTTP error codes such as mysqli's thousands :)
+
+        if(!$displayErrorDetails) { // censor unknown error messages if not in dev
+            $payload = ['error' => 'Unexpected error. If you see this, please contact the developers :)'];
+        }
     }
 
     if($displayErrorDetails) {
@@ -42,9 +47,7 @@ $errorMiddleware->setDefaultErrorHandler(function (
     	$payload['_trace'] = $exception->getTrace();
     }
 
-    echo $exception;
-
-    return $res->withStatus($exception->getCode())->withJson($payload);
+    return $res->withStatus($code)->withJson($payload);
 });
 
 /*
