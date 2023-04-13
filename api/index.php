@@ -10,8 +10,10 @@ use BLRLive\Controllers\{ TeamController, CurrentStatusController, StageControll
 require __DIR__ . '/vendor/autoload.php';
 
 $app = AppFactory::create();
-$app->addRoutingMiddleware();
 $app->setBasePath('/api');
+
+$app->addRoutingMiddleware();
+
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorMiddleware->setDefaultErrorHandler(function (
     Request $req,
@@ -137,5 +139,6 @@ MatchController::on($app);
 // 		'games' => []
 // 	]);
 // });
+$app->add(new Middlewares\TrailingSlash(false));
 
 $app->run();
