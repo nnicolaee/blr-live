@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-use Slim\Http\Response as Response;
+use Slim\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Routing\RouteCollectorProxy;
 use Slim\Factory\AppFactory;
 use Slim\Exception\HttpSpecializedException;
@@ -16,6 +17,7 @@ use BLRLive\Controllers\{
     SSEController,
     BracketController
 };
+use BLRLive\Models\AuthModel;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -59,32 +61,56 @@ $errorMiddleware->setDefaultErrorHandler(function (
 
 $app->add(new Middlewares\TrailingSlash(false));
 
-foreach (
-    [
+// HTTP Basic authentication. Why am I parsing this by hand? Only God knows...
+$authenticateBefore = function (Request $req, RequestHandler $handler) {
+    $resUnauth = (new Response())->withStatus(401)->withHeader('WWW-Authenticate', 'Basic realm="BLR Live"');
+    if (!($auths = $req->getHeader('Authorization'))) {
+        return $resUnauth;
+    }
+
+    if (!str_starts_with($auths[0], 'Basic ')) {
+        return $resUnauth;
+    }
+
+    [$user, $pass] = explode(':', base64_decode(substr($auths[0], 6)));
+    if (AuthModel::authenticate($user, $pass)) {
+        return $handler->handle($req);
+    } else {
+        return $resUnauth;
+    }
+};
+
+$controllers = [
     BracketController::class,
     CurrentStatusController::class,
     MatchController::class,
     SSEController::class,
     StageController::class,
     TeamController::class
-    ] as $controllerClass
-) {
+];
+
+foreach ($controllers as $controllerClass) {
     $classReflection = new ReflectionClass($controllerClass);
-    //DBG: var_dump($classReflection);
 
     [$route] = $classReflection->getAttributes('BLRLive\REST\Controller')[0]->getArguments() + [''];
 
     // Register controllers' routes based on their attributes
     $app->group(
         $route,
-        function (RouteCollectorProxy $group) use ($classReflection) {
+        function (RouteCollectorProxy $group) use ($classReflection, $authenticateBefore) {
             foreach ($classReflection->getMethods(ReflectionMethod::IS_STATIC) as $methodReflection) {
                 $attrs = $methodReflection->getAttributes('BLRLive\REST\HttpRoute');
                 if (!$attrs) {
                     continue;
                 }
                 if ([$method, $pattern] = $attrs[0]->getArguments() + ['GET', '']) {
-                    $group->map([$method], $pattern ?? '', [$classReflection->getName(), $methodReflection->name]);
+                    $r = $group->map([$method], $pattern ?? '', [$classReflection->getName(), $methodReflection->name]);
+
+                    // Authenticate *all* non-GET routes
+                    // Otherwise, GET routes should be accessible to all
+                    if (strcasecmp($method, 'GET')) {
+                        $r->add($authenticateBefore);
+                    }
                 }
             }
         }

@@ -12,4 +12,7 @@ class Config
     public const DB_DATABASE = 'blrlive';
 
     public const API_BASE_URL = 'http://localhost:3000/api';
+
+    public const AUTH_USER = 'this is a...';
+    public const AUTH_PASS = '...very bad idea |^)';
 }
