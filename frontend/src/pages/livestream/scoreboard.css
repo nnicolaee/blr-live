@@ -1,5 +1,26 @@
+/*.Scoreboard {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 27rem;
+}
+
+.UpcomingMatches {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 27rem;
+}*/
+
 #infos {
 	position: absolute;
-	left: 80px; right: 80px;
-	top: 80px; bottom: 232px;
+	left: 2.5rem; right: 2.5rem;
+	top: 2.5rem; bottom: 7.25rem;
+
+	display: flex;
+	justify-content: space-around;
+}
+
+#infos .Scoreboard, #infos .UpcomingMatches {
+	width: 27rem;
 }

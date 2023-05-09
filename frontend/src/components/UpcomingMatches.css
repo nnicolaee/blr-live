@@ -1,11 +1,6 @@
 .UpcomingMatches {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 840px;
-
-	font-size: 48px;
-	line-height: 64px;
+	font-size: 1rem;
+	line-height: 1.5rem;
 }
 
 .UpcomingMatches h2 {
@@ -22,15 +17,15 @@
 .UpcomingMatch {
 	display: block;
 	border: 1px solid white;
-	border-radius: 24px;
+	border-radius: 0.75rem;
 	overflow: hidden;
-	width: 600px;
-	margin: 16px auto;
-	line-height: 64px;
+	width: 18.75rem;
+	margin: 0.5rem auto;
+	line-height: 2rem;
 }
 
 .UpcomingMatch .line {
-	height: 64px;
+	height: 2rem;
 }
 
 .UpcomingMatch .line + .line {
@@ -40,20 +35,20 @@
 .UpcomingMatch .line .score {
 	display: inline-block;
 	text-align: center;
-	width: 64px;
+	width: 2rem;
 	font-weight: 600;
 	float: left;
 }
 
 .UpcomingMatch .line .team {
 	display: inline-block;
-	padding: 0 16px;
+	padding: 0 0.5rem;
 	font-weight: 500;
 
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow-x: hidden;
-	width: 500px;
+	width: 15.5rem;
 }
 
 .UpcomingMatch .line:nth-of-type(1) .score { background-color: var(--left-color-trans); }

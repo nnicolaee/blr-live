@@ -1,0 +1,102 @@
+.CurrentMatch {
+}
+
+.CurrentMatch .info {
+	position: relative;
+	background: #1a1a1a;
+	padding: 1rem;
+	z-index: 2;
+	box-shadow: -0.2rem 0 0 #D0202B, 0.2rem 0 0 #D0202B, -0.2rem -5rem 0 #D0202B, 0.2rem -5rem 0 #D0202B, -0.2rem -10rem 0 #D0202B, 0.2rem -10rem 0 #D0202B;
+}
+
+.CurrentMatch .info::after {
+	display: block;
+	content: " ";
+	position: absolute;
+	left: 0;
+	bottom: -2rem;
+	width: 100%;
+	height: 2rem;
+	background: linear-gradient(to bottom, #1a1a1aff, #1a1a1a00);
+	z-index: -1;
+}
+
+.CurrentMatch .robot-info {
+	font-size: 2rem;
+	width: calc(50% - 2rem);
+	font-weight: 600;
+	max-height: 1.5em;
+	word-break: break-word;
+}
+
+.side-left {
+	float: left;
+	left: 0;
+	text-align: right;
+	--color: var(--left-color);
+}
+
+.side-right {
+	float: right;
+	right: 0;
+	--color: var(--right-color);
+}
+
+.CurrentMatch .ring {
+	position: relative;
+	filter: drop-shadow(0 0.2rem #D0202B) drop-shadow(0.2rem 0 #D0202B) drop-shadow(-0.2rem 0 #D0202B);
+	overflow-x: hidden;
+}
+
+.CurrentMatch .score {
+	clear: both;
+	margin-bottom: -1em;
+	font-weight: 700;
+	font-size: 3rem;
+	display: flex;
+	justify-content: center;
+}
+
+.CurrentMatch .score span {
+	width: 1em;
+	text-align: center;
+}
+
+.CurrentMatch .ring img:first-child {
+	position: relative;
+	width: 100%;
+	z-index: -1;
+}
+
+.CurrentMatch .ring .robot-img {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	height: 70%;
+	max-width: 40%;
+	object-fit: contain;
+	margin: 1rem 2rem;
+	filter: drop-shadow(0.2rem 0.2rem var(--color)) drop-shadow(0.2rem 0 var(--color)) drop-shadow(0.2rem -0.2rem var(--color)) drop-shadow(0 -0.2rem var(--color)) drop-shadow(-0.2rem -0.2rem var(--color)) drop-shadow(-0.2rem 0 var(--color)) drop-shadow(-0.2rem 0.2rem var(--color)) drop-shadow(0 0.2rem var(--color)) drop-shadow(0 0 20px var(--color));
+}
+
+@media screen and (max-width: 640px) {
+	.CurrentMatch .ring .robot-img {
+		margin: -0.75rem -1.5rem;
+		max-width: 50%;
+	}
+}
+
+@media screen and (min-width: 640px) {
+	.CurrentMatch .ring {
+		transform: translateY(-4rem);
+		margin-bottom: -6rem;
+	}
+}
+
+.CurrentMatch .ring .robot-img.side-left {
+	transform: translateY(-50%);
+}
+
+.CurrentMatch .ring .robot-img.side-right {
+	transform: translateY(-50%) scaleX(-1);
+}

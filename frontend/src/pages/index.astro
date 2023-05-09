@@ -1,0 +1,94 @@
+---
+import WebLayout from '../layouts/WebLayout.astro';
+
+import CurrentMatch from '../components/CurrentMatch.tsx';
+import Scoreboard from '../components/Scoreboard.tsx';
+import UpcomingMatches from '../components/UpcomingMatches.tsx';
+
+import logoFIE from '../images/fie.svg';
+import logoBLR from '../images/BLR_Logo_white.png';
+import logoBEST from '../images/bestcj.svg';
+---
+
+<WebLayout title='BattleLab Robotica'>
+	<header id='logos'>
+		<div id='logos-fie'><a href='https://ie.utcluj.ro'><img src={logoFIE} alt='Facultatea de Inginerie Electrica' /></a></div>
+		<div id='logos-blr'><a href='/'><img src={logoBLR} alt='BattleLab Robotica' /></a></div>
+		<div id='logos-best'><a href='https://bestcj.ro'><img src={logoBEST} alt='Board of European Students of Technology' /></a></div>
+	</header>
+
+	<CurrentMatch client:only="preact" />
+
+	<div id='tables'>
+		<Scoreboard client:only="preact" />
+		<UpcomingMatches client:only="preact" />
+	</div>
+
+	<nav id='dock'>
+		<b><u>{'2023 Group A'}</u></b>
+		<a href='#'>Teams</a>
+		<a href='#'>Livestream</a>
+	</nav>
+</WebLayout>
+
+<style>
+#logos {
+	height: 4rem;
+	padding: 1rem;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+
+	background-color: #1a1a1a;
+
+	position: relative;
+	z-index: 10;
+}
+
+#logos > div {
+	max-width: 30%;
+}
+
+#logos img {
+	object-fit: contain;
+	height: 3rem;
+	max-width: 100%;
+}
+
+#logos-blr img {
+	height: 4rem;
+	margin: 0.5rem;
+}
+
+#tables {
+	display: flex;
+	flex-direction: column;
+}
+
+#dock {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	max-width: 30rem;
+	height: 3rem;
+	background-color: #1a1a1a;
+	border-radius: 0.5rem 0.5rem 0 0;
+	padding: 0.75rem;
+	box-sizing: border-box;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+:root {
+	padding-bottom: 4rem; /* empty space so you can scroll and see what would be otherwise covered by the navbar */
+}
+
+#tables :global(table) {
+	background-color: #1a1a1a;
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	margin: auto;
+	max-width: 25rem;
+}
+
+</style>

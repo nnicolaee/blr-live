@@ -8,6 +8,10 @@ function Match({ score1, team1, score2, team2 }) {
 }
 
 export default function UpcomingMatches({ matches }) {
+	if(!matches) {
+		matches = [];
+	}
+	
 	return (
 		<div class='UpcomingMatches'>
 		<h2>Upcoming matches</h2>
