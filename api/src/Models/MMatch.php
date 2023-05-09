@@ -11,40 +11,128 @@ create table Matches (
     stage varchar(50) not null,
     team1 varchar(50) not null,
     team2 varchar(50) not null,
-    status enum('upcoming', 'finished') not null,
+    status enum('upcoming', 'win1', 'win2', 'draw') not null,
 
     foreign key (stage) references Stages(name) on delete cascade,
     foreign key (team1) references Teams(username) on delete cascade,
     foreign key (team2) references Teams(username) on delete cascade
 );
 
-create table Games (
-    id int primary key AUTO_INCREMENT,
-    match_id int not null,
-    status enum('team1', 'team2', 'draw') not null,
-    finish_time datetime not null,
-
-    foreign key (match_id) references Matches(id) on delete cascade
-);
-
 */
 
+// Funny name because 'Match' clashes with the keyword :(
 class MMatch extends BaseModel
 {
- // Funny name because 'Match' clashes with the keyword :(
-    protected static string $baseUrl = \BLRLive\Config::API_BASE_URL . "/matches";
+    protected static string $baseUrl = "matches";
 
-    public readonly int $id;
-    public string $stage;
-    public string $team1;
-    public string $team2;
-    public int $score1;
-    public int $score2;
-    public string $status;
+    private int $score1 = 0;
+    private int $score2 = 0;
+    private array $games;
 
-    public static function get(int $id): MMatch
+    public function __construct(
+        public readonly int $id,
+        public string $stage,
+        public string $team1,
+        public string $team2,
+        public string $status = 'upcoming'
+    ) {
+        $this->games = Game::getForMatch($id);
+
+        foreach ($this->games as $game) {
+            if ($game->status == 'team1') {
+                $this->score1++;
+            }
+            if ($game->status == 'team2') {
+                $this->score2++;
+            }
+        }
+    }
+
+    public static function create(string $stage, string $team1, string $team2): MMatch
     {
-        return new MMatch();
+        $db = Database::connect();
+        $db->execute_query(
+            'insert into Matches (stage, team1, team2, status) values (?, ?, ?, ?)',
+            [$stage, $team1, $team2, 'upcoming']
+        );
+        $id = $db->insert_id;
+        $db->commit();
+
+        return new MMatch(
+            id: $id,
+            stage: $stage,
+            team1: $team1,
+            team2: $team2
+        );
+    }
+
+    public static function get(string $id): ?MMatch
+    {
+        if (!is_numeric($id)) {
+            return null;
+        }
+
+        $db = Database::connect();
+        $r = $db->execute_query(
+            'select * from Matches where id = ?',
+            [intval($id)]
+        )->fetch_assoc();
+        if (!$r) {
+            return null;
+        }
+
+        return new MMatch(
+            id: $r['id'],
+            stage: $r['stage'],
+            team1: $r['team1'],
+            team2: $r['team2'],
+            status: $r['status']
+        );
+    }
+
+    public static function exists(string $id): bool
+    {
+        if (!is_numeric($id)) {
+            return false;
+        }
+
+        $db = Database::connect();
+        return !is_null($db->execute_query(
+            'select id from Matches where id = ?',
+            [$id]
+        )->fetch_assoc());
+    }
+
+    public function addGame(string $status): Game
+    {
+        if ($status != 'team1' && $status != 'team2' && $status != 'draw') {
+            throw new RuntimeException('Invalid game status');
+        }
+
+        return Game::create(
+            match: $this->id,
+            status: $status
+        );
+    }
+
+    public function delete(): void
+    {
+        $db = Database::connect();
+        $db->execute_query(
+            'delete from Matches where id = ?',
+            [$this->id]
+        );
+        $db->commit();
+    }
+
+    public function save(): void
+    {
+        $db = Database::connect();
+        $db->execute_query(
+            'update Matches set status = ? where id = ?',
+            [$this->status, $this->id]
+        );
+        $db->commit();
     }
 
     public function jsonSerialize(): \BLRLive\Schemas\MMatch
