@@ -13,28 +13,20 @@ create table Stages (
     foreign key (bracket) references BracketSlots(id) on delete set null
 );
 
-create table TeamStageParticipation (
-    stage varchar(50) not null,
-    team varchar(50) not null,
-    status enum('participant', 'qualified', 'disqualified') not null default 'participant',
-
-    foreign key (stage) references Stages(name),
-    foreign key (team) referenes Teams(username)
-);
-
 */
 
 class Stage extends BaseModel
 {
-    protected static string $baseUrl = \BLRLive\Config::API_BASE_URL . "/stages";
+    protected static string $baseUrl = "stages";
+    protected bool $brief = false;
 
     public function __construct(
         public readonly string $name,
-        public ?string $bracket
+        public ?int $bracket
     ) {
     }
 
-    public function getId()
+    public function getId(): string
     {
         return $this->name;
     }

@@ -30,7 +30,7 @@ class TeamController
             $res = $res->withStatus(201);
         }
 
-        return $res->withHeader('Location', TeamController::teamUrl($team));
+        return $res->withHeader('Location', '/teams/' . urlencode($body->username));
     }
 
     #[HttpRoute('GET', '/{username}')]
@@ -64,19 +64,19 @@ class TeamController
         $prev = null;
         if ($offset > 0 && $offset - $limit < $total) { // build prev URL
             $prev_offset = max(0, $offset - $limit);
-            $prev = Config::API_BASE_URL . '/teams?offset=' . $prev_offset . '&limit=' . $limit;
+            $prev = '/teams?offset=' . $prev_offset . '&limit=' . $limit;
         }
 
         $next = null;
         if ($offset + $count < $total) { // build next URL
             $next_offset = $offset + $count;
-            $next = Config::API_BASE_URL . '/teams?offset=' . $next_offset . '&limit=' . $limit;
+            $next = '/teams?offset=' . $next_offset . '&limit=' . $limit;
         }
 
-        $first = Config::API_BASE_URL . '/teams?offset=0&limit=' . $limit;
+        $first = '/teams?offset=0&limit=' . $limit;
 
         $last_offset = floor($total / $limit) * $limit;
-        $last = Config::API_BASE_URL . '/teams?offset=' . $last_offset . '&limit=' . $limit;
+        $last = '/teams?offset=' . $last_offset . '&limit=' . $limit;
 
         return $res->withJson([
             'total' => $total,

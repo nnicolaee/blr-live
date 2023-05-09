@@ -7,21 +7,25 @@ namespace BLRLive\Models;
 abstract class BaseModel implements \JsonSerializable
 {
     protected static string $baseUrl;
-    protected bool $brief = false;
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function getUrl(): string
+    /*public function getUrl(): string
     {
         return static::$baseUrl . '/' . $this->getId();
-    }
+    }*/
 
     abstract public static function get(string $id): ?BaseModel;
 
-    public static function fromUrl(string $url): ?BaseModel
+    public static function exists(string $id): bool
+    {
+        return !is_null(static::get($id));
+    }
+
+    /*public static function fromUrl(string $url): ?BaseModel
     {
         if (!str_starts_with($url, static::baseUrl . '/')) {
             return null;
@@ -29,5 +33,5 @@ abstract class BaseModel implements \JsonSerializable
 
         $id = substr($url, strlen(static::baseUrl . '/'));
         return static::get($id);
-    }
+    }*/
 }

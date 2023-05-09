@@ -6,10 +6,11 @@ namespace BLRLive\Controllers;
 
 use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use BLRLive\Config;
+use Slim\Exception\HttpBadRequestException;
 use BLRLive\Models\CurrentStatus;
 use BLRLive\Models\LiveEvents;
 use BLRLive\REST\{Controller, HttpRoute};
+use BLRLive\Config;
 
 #[Controller('/currentStatus')]
 class CurrentStatusController

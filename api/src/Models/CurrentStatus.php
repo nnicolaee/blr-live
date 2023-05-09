@@ -21,7 +21,7 @@ insert into CurrentCompetitionStatus values ('Development', 69, null);
 
 class CurrentStatus extends BaseModel
 {
-    protected static string $baseUrl = \BLRLive\Config::API_BASE_URL . "/currentStatus";
+    protected static string $baseUrl = "currentStatus";
 
     public ?string $stage;
     public ?int $match;
@@ -32,7 +32,7 @@ class CurrentStatus extends BaseModel
         return null;
     }
 
-    public static function get(#[Unused] string $id): CurrentStatus
+    public static function get(string $_ = null): CurrentStatus
     {
         $db = Database::connect();
         [ $stage, $match, $livestream ] = $db->query(

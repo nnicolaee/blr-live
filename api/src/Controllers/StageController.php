@@ -28,7 +28,7 @@ class StageController
             $res = $res->withStatus(201);
         }
 
-        return $res->withHeader('Location', $stage->getUrl());
+        return $res->withHeader('Location', '/stages/' . urlencode($stage->name));
     }
 
     #[HttpRoute('GET')]

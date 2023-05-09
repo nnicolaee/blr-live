@@ -21,7 +21,7 @@ class BracketController
             or throw new HttpBadRequestException($req);
         $bracket = Bracket::createTree($body->depth);
 
-        return $res->withStatus(201)->withHeader('Location', $bracket->getUrl());
+        return $res->withStatus(201)->withHeader('Location', '/brackets/' . $bracket->id);
     }
 
     #[HttpRoute('GET', '/{bracket}')]
