@@ -42,36 +42,73 @@ class StageController
         ]);
     }
 
-    #[HttpRoute('GET', '/{name}')]
+    #[HttpRoute('GET', '/{stage}')]
     public static function getStage(Request $req, Response $res, $args)
     {
-        $stage = Stage::get($args['name'])
+        $stage = Stage::get($args['stage'])
             or throw new HttpNotFoundException($req, 'Stage not found');
         return $res->withJson($stage);
     }
 
-    #[HttpRoute('PUT', '/{name}')]
+    #[HttpRoute('PUT', '/{stage}')]
     public static function updateStage(Request $req, Response $res, $args)
     {
-        $body = $req->getParsedBody();
-        $stage = Stage::get($args['name'])
+        $body = UpdateStageRequest::from($req->getParsedBody())
+            or throw new HttpBadRequestException($req);
+        $stage = Stage::get($args['stage'])
             or throw new HttpNotFoundException($req, 'Stage not found');
 
-        if (isset($body['bracket']) && is_string($body['bracket'])) {
-            $stage->bracket = Bracket::fromUrl($body['bracket'])
-                or throw new HttpNotFoundException($req, 'Referenced bracket not found');
+        if ($body->bracket) {
+            $stage->bracket = $body->bracket;
         }
 
         $stage->save();
         return $res->withJson($stage);
     }
 
-    #[HttpRoute('DELETE', '/{name}')]
+    #[HttpRoute('DELETE', '/{stage}')]
     public static function deleteStage(Request $req, Response $res, $args)
     {
-        $stage = Stage::get($args['name'])
+        $stage = Stage::get($args['stage'])
             or throw new HttpNotFoundException($req, 'Stage not found');
         $stage->delete();
+        return $res->withStatus(204);
+    }
+
+    #[HttpRoute('PUT', '/{stage}/teams/{team}')]
+    public static function addParticipation(Request $req, Response $res, $args)
+    {
+        $stage = Stage::get($args['stage'])
+            or throw new HttpNotFoundException($req, 'Stage not found');
+        $team = Team::get($args['team'])
+            or throw new HttpNotFoundException($req, 'Team not found');
+
+        return $res->withJson(Participation::create(
+            team: $team->username,
+            stage: $stage->name
+        ));
+    }
+
+    #[HttpRoute('PATCH', '/{stage}/teams/{team}')]
+    public static function editParticipation(Request $req, Response $res, $args)
+    {
+        $body = UpdateParticipationRequest::from($req->getParsedBody())
+            or throw new HttpBadRequestException($req);
+        $par = Participation::get($args['stage'], $args['team'])
+            or throw new HttpNotFoundException($req, 'Team does not participate in stage');
+
+        if(isset($body->status)) $par->status = $body->status;
+
+        $par->save();
+        return $res->withJson($par);
+    }
+
+    #[HttpRoute('DELETE', '/{stage}/teams/{team}')]
+    public static function deleteParticipation(Request $req, Response $res, $args)
+    {
+        $par = Participation::get($args['stage'], $args['team'])
+            or throw new HttpNotFoundException($req, 'Team does not participate in stage');
+        $par->delete();
         return $res->withStatus(204);
     }
 }
