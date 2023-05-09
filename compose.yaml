@@ -6,8 +6,9 @@ services:
     ports:
       - 3000:80
     volumes:
-      - ./frontend/dist:/var/www/html
-      - ./api:/var/www/html/api:ro
+      - type: bind
+        source: ./frontend/dist
+        target: /var/www/html
   db:
     image: mysql
     environment:
