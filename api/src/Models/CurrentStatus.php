@@ -57,12 +57,12 @@ class CurrentStatus extends BaseModel
         $db->commit();
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): \BLRLive\Schemas\CurrentStatus
     {
-        return [
-            'stage' => $this->stage,
-            'match' => $this->match,
-            'livestream' => $this->livestream,
-        ];
+        return new \BLRLive\Schemas\CurrentStatus(
+            stage: $this->stage,
+            match: $this->match,
+            livestream: $this->livestream
+        );
     }
 }

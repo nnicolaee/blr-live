@@ -88,22 +88,22 @@ class Stage extends BaseModel
         return $stages;
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): \BLRLive\Schemas\StageBrief|\BLRLive\Schemas\Stage
     {
         if ($this->brief) {
-            return [
-                'self' => $this->getUrl(),
-                'name' => $this->name,
-                'bracket' => $this->bracket,
-            ];
+            return new \BLRLive\Schemas\StageBrief(
+                id: $this->id,
+                name: $this->name,
+                bracket: $this->bracket
+            );
         } else {
-            return [
-                'self' => $this->getUrl(),
-                'name' => $this->name,
-                'bracket' => $this->bracket,
-                'scoreboard' => [],
-                'matches' => []
-            ];
+            return new \BLRLive\Schemas\Stage(
+                id: $this->id,
+                name: $this->name,
+                bracket: $this->bracket,
+                scoreboard: [],
+                matches: []
+            );
         }
     }
 }

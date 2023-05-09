@@ -47,16 +47,17 @@ class MMatch extends BaseModel
         return new MMatch();
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): \BLRLive\Schemas\MMatch
     {
-        return [
-            'self' => $this->getUrl(),
-            'stage' => $this->stage,
-            'team1' => $this->team1,
-            'team2' => $this->team2,
-            'score1' => $this->score1,
-            'score2' => $this->score2,
-            'status' => $this->status
-        ];
+        return new \BLRLive\Schemas\MMatch(
+            id: $this->id,
+            stage: $this->stage,
+            team1: $this->team1,
+            team2: $this->team2,
+            score1: $this->score1,
+            score2: $this->score2,
+            status: $this->status,
+            games: $this->games
+        );
     }
 }

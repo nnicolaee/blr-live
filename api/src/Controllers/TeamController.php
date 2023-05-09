@@ -6,9 +6,9 @@ namespace BLRLive\Controllers;
 
 use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\{ HttpNotFoundException, HttpBadRequestException };
 use BLRLive\Config;
 use BLRLive\Models\Team;
-use Slim\Exception\{ HttpNotFoundException, HttpBadRequestException };
 use BLRLive\REST\{ Controller, HttpRoute };
 
 #[Controller('/teams')]
@@ -17,17 +17,15 @@ class TeamController
     #[HttpRoute('POST')]
     public static function createTeam(Request $req, Response $res)
     {
-        $data = $req->getParsedBody();
-        if (!is_string($data['username']) || !is_string($data['name'])) {
-            throw new HttpBadRequestException("Invalid fields");
-        }
+        $body = CreateTeamRequest::from($body->getParsedBody())
+            or throw new HttpBadRequestException($req);
 
-        if ($team = Team::get($data['username'])) { // Prone to a race condition but nothing mega bad should happen
+        if ($team = Team::get($body->username)) { // Prone to a race condition but nothing mega bad should happen
             $res = $res->withStatus(303);
         } else {
             $team = Team::create(
-                username: $data['username'],
-                name: $data['name']
+                username: $body->username,
+                name: $body->name
             );
             $res = $res->withStatus(201);
         }
@@ -95,16 +93,17 @@ class TeamController
     #[HttpRoute('PUT', '/{username}')]
     public static function updateTeam(Request $req, Response $res, $args)
     {
-        $data = $req->getParsedBody();
+        $body = UpdateTeamRequest::from($req->getParsedBody())
+            or throw new HttpBadRequestException($req);
         $team = Team::get($args['username'])
             or throw new HttpNotFoundException($req, "Team not found");
 
-        if (is_string($data['name'])) {
-            $team->name = $data['name'];
+        if ($body->name) {
+            $team->name = $body->name;
         }
 
         $team->save();
-        return $res->withStatus(200)->withJson(TeamController::teamJson($team));
+        return $res->withStatus(200)->withJson($team);
     }
 
     #[HttpRoute('DELETE', '/{username}')]

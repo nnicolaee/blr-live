@@ -6,9 +6,10 @@ namespace BLRLive\Controllers;
 
 use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use BLRLive\REST\{ Controller, HttpRoute };
-use BLRLive\Models\{ Bracket };
 use Slim\Exception\{ HttpNotFoundException, HttpBadRequestException };
+use BLRLive\REST\{ Controller, HttpRoute };
+use BLRLive\Models\{ Bracket, Stage };
+use BLRLive\Schemas\CreateBracketRequest;
 
 #[Controller('/brackets')]
 class BracketController
@@ -16,14 +17,9 @@ class BracketController
     #[HttpRoute('POST')]
     public static function createBracket(Request $req, Response $res)
     {
-        $body = $req->getParsedBody();
-
-        if (!isset($body['depth']) || !is_numeric($body['depth'])) {
-            throw new HttpBadRequestException($req);
-        }
-        $depth = intval($body['depth']);
-
-        $bracket = Bracket::createTree($depth);
+        $body = CreateBracketRequest::from($req->getParsedBody())
+            or throw new HttpBadRequestException($req);
+        $bracket = Bracket::createTree($body->depth);
 
         return $res->withStatus(201)->withHeader('Location', $bracket->getUrl());
     }
@@ -43,14 +39,17 @@ class BracketController
         $slot = Bracket::getSlot(intval($args['bracketSlot']))
             or throw new HttpNotFoundException($req, 'Bracket slot not found');
 
-        $body = $req->getParsedBody();
-        if (isset($body['match']) && is_string($body['match'])) {
-            $slot->match = MMatch::fromUrl($body['match'])?->id
-                or throw new HttpNotFoundException($req, 'Referenced match not found');
+        $body = UpdateBracketSlotRequest::from($req->getParsedBody())
+            or throw new HttpBadRequestException($req);
+            
+        if (!MMatch::exists($body->match)) {
+            throw new HttpBadRequestException($req, 'Referenced match not found');
         }
 
+        $slot->match = $body->match;
+
         $slot->save();
-        return $res->withStatus(204); // FIXME return something proper
+        return $res->withStatus(200);
     }
 
     #[HttpRoute('DELETE', '/{bracketSlot}')]

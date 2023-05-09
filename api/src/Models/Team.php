@@ -88,12 +88,11 @@ class Team extends BaseModel
         return $team;
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): \BLRLive\Schemas\Team
     {
-        return [
-            'self' => $this->getUrl(),
-            'username' => $this->username,
-            'name' => $this->name
-        ];
+        return new \BLRLive\Schemas\Team(
+            username: $this->username,
+            name: $this->name
+        );
     }
 }

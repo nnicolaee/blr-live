@@ -23,30 +23,26 @@ class CurrentStatusController
     #[HttpRoute('PUT')]
     public static function updateCurrentStatus(Request $req, Response $res)
     {
-        $data = $req->getParsedBody();
         $currentStatus = CurrentStatus::get();
+        $body = UpdateCurrentStatusRequest::from($req->getParsedBody())
+            or throw new HttpBadRequestException($req);
 
-        if (isset($data['stage']) && is_string($data['stage'])) {
-            $currentStatus->stage = Stage::fromUrl($data['stage'])?->getId()
-                or throw new HttpNotFoundException($req, 'Referenced stage does not exist');
-
-            LiveEvents::sendEvent('currentStatus', ['stage' => $data['stage']]);
+        if ($body->stage) {
+            $currentStatus->stage = $body->stage;
+            LiveEvents::sendEvent('currentStatus', ['stage' => $body->stage]);
         }
 
-        if (isset($data['match']) && is_string($data['match'])) {
-            $currentStatus->match = MMatch::fromUrl($data['match'])?->getId()
-                or throw new HttpNotFoundException($req, 'Referenced match does not exist');
-
-            LiveEvents::sendEvent('currentStatus', ['match' => $data['match']]);
+        if ($body->match) {
+            $currentStatus->match = $body->match;
+            LiveEvents::sendEvent('currentStatus', ['match' => $body->match]);
         }
 
-        if (isset($data['livestream']) && is_string($data['livestream'])) {
-            $currentStatus->livestream = $data['livestream'];
-
-            LiveEvents::sendEvent('currentStatus', ['livestream' => $data['livestream']]);
+        if ($body->livestream) {
+            $currentStatus->livestream = $body->livestream;
+            LiveEvents::sendEvent('currentStatus', ['livestream' => $body->livestream]);
         }
 
-        $currentStatus->save();
+        $currentStatus->save() or throw new HttpNotFoundException($req, 'Referenced objects not found');
         return $res->withJson($currentStatus);
     }
 }

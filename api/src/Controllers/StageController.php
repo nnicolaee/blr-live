@@ -6,6 +6,7 @@ namespace BLRLive\Controllers;
 
 use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\{ HttpNotFoundException, HttpBadRequestException };
 use BLRLive\Models\Stage;
 use BLRLive\REST\{ Controller, HttpRoute };
 
@@ -15,17 +16,14 @@ class StageController
     #[HttpRoute('POST')]
     public static function createStage(Request $req, Response $res)
     {
-        $body = $req->getParsedBody();
+        $body = CreateStageRequest::from($req->getParsedBody())
+            or throw new HttpBadRequestException($req);
 
-        if (!isset($body['name']) || !is_string($body['name'])) {
-            throw new HttpBadRequestException($req);
-        }
-
-        if ($stage = Stage::get($body['name'])) {
+        if ($stage = Stage::get($body->name)) {
             $res = $res->withStatus(303);
         } else {
             $stage = Stage::create(
-                name: $body['name']
+                name: $body->name
             );
             $res = $res->withStatus(201);
         }
