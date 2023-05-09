@@ -88,6 +88,39 @@ class Stage extends BaseModel
         return $stages;
     }
 
+    public static function getHavingBracket(int $bracket_id): ?Stage
+    {
+        $db = Database::connect();
+
+        return Stage::fromRow($db->execute_query(
+            'select * from Stages where bracket = ?',
+            [$bracket_id]
+        )->fetch_assoc());
+    }
+
+    public static function addTeam(string $stage, string $team)
+    {
+
+        $db = Database::connect();
+        $db->execute_query('insert into TeamStageParticipation (stage, team) values (?, ?)', [$stage, $team]);
+
+        $teams = $db->execute_query('select team from TeamStageParticipation where team = ?', [$team]);
+        foreach($teams as $t)
+        {
+            var_dump($t);
+        }
+
+        $db->commit();
+    }
+
+    public static function removeTeam(string $stage, string $team)
+    {
+
+        $db = Database::connect();
+        $db->execute_query('insert into Stages (name) values (?)', [$name]);
+        $db->commit();
+    }
+
     public function jsonSerialize(): \BLRLive\Schemas\StageBrief|\BLRLive\Schemas\Stage
     {
         if ($this->brief) {
