@@ -46,11 +46,19 @@ class Stage extends BaseModel
     public static function get(string $name): ?Stage
     {
         $db = Database::connect();
-        $stage = $db->execute_query(
-            'select name, bracket from Stages where name = ?',
+        return Stage::fromRow($db->execute_query(
+            'select * from Stages where name = ?',
             [$name]
-        )->fetch_assoc();
-        return Stage::fromRow($stage);
+        )->fetch_assoc());
+    }
+
+    public static function exists(string $name): bool
+    {
+        $db = Database::connect();
+        return !is_null($db->execute_query(
+            'select name from Stages where name = ?',
+            [$name]
+        )->fetch_assoc());
     }
 
     public static function create(string $name): Stage
@@ -70,7 +78,7 @@ class Stage extends BaseModel
     {
         $db = Database::connect();
 
-        $r = $db->execute_query('select name, bracket from Stages');
+        $r = $db->execute_query('select * from Stages');
         $stages = [];
         foreach ($r as $row) {
             $stage = Stage::fromRow($row);

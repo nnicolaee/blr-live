@@ -15,17 +15,25 @@ create table Teams (
 
 class Team extends BaseModel
 {
-    protected static string $baseUrl = \BLRLive\Config::API_BASE_URL . "/teams";
+    protected static string $baseUrl = "teams";
 
-    public readonly string $username;
-    public string $name;
+    public function __construct(
+        public readonly string $username,
+        public string $name
+    ) {
+    }
+
+    public function getId(): string
+    {
+        return $this->username;
+    }
 
     public static function create(string $username, string $name): Team
     {
-        $team = new Team();
-
-        $team->username = $username;
-        $team->name = $name;
+        $team = new Team(
+            username: $username,
+            name: $name
+        );
 
         $db = Database::connect();
         $db->execute_query('insert into Teams (username, name) values (?, ?)', [$username, $name]);
@@ -40,7 +48,7 @@ class Team extends BaseModel
         return intval($db->query('select count(*) from Teams')->fetch_array()[0]);
     }
 
-    public static function getPaginated(int $offset = 0, int $limit = 50): array
+    public static function getPaginated(int $offset = 0, int $limit = 50): array // of Team
     {
         $db = Database::Connect();
         $r = $db->execute_query('select username, name from Teams limit ? offset ?', [$limit, $offset]);
@@ -61,14 +69,23 @@ class Team extends BaseModel
         return Team::fromRow($r->fetch_assoc());
     }
 
-    public function save()
+    public static function exists(string $username): bool
+    {
+        $db = Database::connect();
+        return !is_null($db->execute_query(
+            'select username from Teams where username = ?',
+            [$username]
+        )->fetch_assoc());
+    }
+
+    public function save(): void
     {
         $db = Database::Connect();
         $db->execute_query('update Teams set name = ? where username = ?', [$this->name, $this->username]);
         $db->commit();
     }
 
-    public function delete()
+    public function delete(): void
     {
         $db = Database::Connect();
         $db->execute_query('delete from Teams where username = ?', [$this->username]);
@@ -81,11 +98,10 @@ class Team extends BaseModel
             return null;
         }
 
-        $team = new Team();
-        $team->username = $row['username'];
-        $team->name = $row['name'];
-
-        return $team;
+        return new Team(
+            username: $row['username'],
+            name: $row['name']
+        );
     }
 
     public function jsonSerialize(): \BLRLive\Schemas\Team

@@ -19,20 +19,21 @@ create table BracketSlots (
 
 class Bracket extends BaseModel
 {
-    protected static string $baseUrl = \BLRLive\Config::API_BASE_URL . "/brackets";
-
-    public readonly int $id;
-    public ?int $match;
-    public readonly ?int $parent;
-    public readonly array $children;
+    protected static string $baseUrl = "brackets";
 
     private const MAX_DEPTH = 6; // Shouldn't ever have more than 64 teams / 6 rounds in the same bracket
+
+    public function __construct(
+        public readonly int $id,
+        public ?int $match,
+        public readonly ?int $parent,
+        public readonly array $children
+    ) {
+    }
 
     public static function getBracket(int $id): ?Bracket
     {
         $db = Database::connect();
-
-        $bracket = new Bracket();
 
         $r = $db->execute_query(
             'select match_id from BracketSlots where id = ? and parent is null',
@@ -41,19 +42,18 @@ class Bracket extends BaseModel
         if (!$r) {
             return null;
         }
-        $bracket->match = $r['match_id'];
-        $bracket->parent = null;
-        $bracket->id = $id;
-        $bracket->children = Bracket::getTree($bracket, $db);
 
-        return $bracket;
+        return new Bracket(
+            id: $id,
+            match: $r['match_id'],
+            parent: null,
+            children: Bracket::getTree($id, $db)
+        );
     }
 
     public static function getSlot(int $id): ?Bracket
     {
         $db = Database::connect();
-
-        $bracket = new Bracket();
 
         $r = $db->execute_query(
             'select match_id, parent from BracketSlots where id = ?',
@@ -62,12 +62,13 @@ class Bracket extends BaseModel
         if (!$r) {
             return null;
         }
-        $bracket->match = $r['match_id'];
-        $bracket->parent = $r['parent'];
-        $bracket->id = $id;
-        $bracket->children = [];
 
-        return $bracket;
+        return new Bracket(
+            id: $id,
+            match: $r['match_id'],
+            parent: $r['parent'],
+            children: []
+        );
     }
 
     public static function get(string $id): ?Bracket
@@ -78,7 +79,7 @@ class Bracket extends BaseModel
         return getSlot(intval($id));
     }
 
-    private static function getTree(Bracket $parent, \mysqli $db, int $depth = 0): array
+    private static function getTree(int $parent_id, \mysqli $db, int $depth = 0): array
     {
         if ($depth > Bracket::MAX_DEPTH) {
             throw new RuntimeException('Bracket too deep, might have cycles');
@@ -86,17 +87,16 @@ class Bracket extends BaseModel
 
         $r = $db->execute_query(
             'select id, match_id from BracketSlots where parent = ?',
-            [$parent->id]
+            [$parent_id]
         );
         $children = [];
         foreach ($r as $row) {
-            $child = new Bracket();
-            $child->id = $row['id'];
-            $child->match = $row['match_id'];
-            $child->parent = $parent->id;
-            $child->children = Bracket::getTree($child, $db, $depth + 1);
-
-            $children[] = $child;
+            $children[] = new Bracket(
+                id: $row['id'],
+                match: $row['match_id'],
+                parent: $parent_id,
+                children: Bracket::getTree($row['id'], $db, $depth + 1)
+            );
         }
         return $children;
     }
@@ -143,38 +143,28 @@ class Bracket extends BaseModel
         $id = $db->insert_id;
         $db->commit();
 
-        $bracket = new Bracket();
-        $bracket->id = $id;
-        $bracket->match = null;
-        $bracket->parent = $parent;
-
-        $bracket->children = $depth > 1 ? [
-            Bracket::createTree($depth - 1, $bracket, $db),
-            Bracket::createTree($depth - 1, $bracket, $db)
-        ] : [];
-
-        return $bracket;
+        return new Bracket(
+            id: $id,
+            match: null,
+            parent: $parent,
+            children: $depth > 1 ? [
+                Bracket::createTree($depth - 1, $bracket, $db),
+                Bracket::createTree($depth - 1, $bracket, $db)
+            ] : []
+        );
     }
 
-    public function jsonSerialize(): array
-    {
-        return [
-            'self' => $this->getUrl(),
-            'matches' => $this->matchesJson()
-        ];
-    }
-
-    private function matchesJson(): array
+    public function jsonSerialize(): \BLRLive\Schemas\BracketNode
     {
         $children = [];
         foreach ($this->children as $child) {
-            $children[] = $child->matchesJson();
+            $children[] = $child->jsonSerialize();
         }
 
-        return [
-            'self' => $this->getUrl(),
-            'match' => $this->match ? MMatch::get($this->match)?->getUrl() : null,
-            'children' => $children
-        ];
+        return new \BLRLive\Schemas\BracketNode(
+            id: $this->id,
+            match: $this->match,
+            children: $children
+        );
     }
 }

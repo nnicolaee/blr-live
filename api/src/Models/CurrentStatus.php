@@ -47,7 +47,7 @@ class CurrentStatus extends BaseModel
         return $currentStatus;
     }
 
-    public function save()
+    public function save(): void
     {
         $db = Database::connect();
         $db->execute_query(
