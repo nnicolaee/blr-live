@@ -22,13 +22,14 @@ class LiveEvents
 
     public function __construct()
     {
-        $this->db = Database::connect(false);
+        $this->db = Database::connect();
+        $this->db->autocommit(true);
         $this->queue = [];
 
         $this->lastId = $this->db->query('select id from LiveEvents order by id desc limit 1')->fetch_array()[0];
     }
 
-    private function fetch()
+    private function fetch(): void
     {
         $r = $this->db->execute_query(
             'select id, event, data from LiveEvents where id > ? order by id asc',
@@ -41,7 +42,7 @@ class LiveEvents
         }
     }
 
-    public function hasEvent()
+    public function hasEvent(): bool
     {
         if (empty($this->queue)) {
             $this->fetch();
@@ -50,7 +51,7 @@ class LiveEvents
         return !empty($this->queue);
     }
 
-    public function getEvent()
+    public function getEvent(): mixed
     {
         if (!$this->hasEvent()) {
             return null;
@@ -59,7 +60,7 @@ class LiveEvents
         return array_shift($this->queue);
     }
 
-    public static function sendEvent(string $event, mixed $data)
+    public static function sendEvent(string $event, mixed $data): void
     {
         $db = Database::connect();
         $db->execute_query('insert into LiveEvents(event, data) values (?, ?)', [$event, json_encode($data)]);
