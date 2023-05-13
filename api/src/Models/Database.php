@@ -12,11 +12,15 @@ class Database
 
     public static function connect(): \mysqli
     {
-        if (!is_null(static::$db)) {
-            return static::$db;
+        try {
+            if (isset(static::$db?->server_info)) {
+                return static::$db;
+            }
+        } catch(\Exception $e) {
+
         }
 
-        static::$db = new \mysqli(Config::DB_HOSTNAME, Config::DB_USERNAME, Config::DB_PASSWORD, Config::DB_DATABASE);
+        static::$db = new \mysqli('p:' . Config::DB_HOSTNAME, Config::DB_USERNAME, Config::DB_PASSWORD, Config::DB_DATABASE);
 
         if (!static::$db) {
             throw new Exception('Could not connect to database', 500);
