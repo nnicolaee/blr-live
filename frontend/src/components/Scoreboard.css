@@ -8,20 +8,16 @@
 	font-weight: 400;
 }
 
-.Scoreboard table {
-	border-collapse: separate;
-	border-spacing: 0.5rem 0; /* 16px 0 */
-	width: 100%;
+.Scoreboard table tr > .pos {
+	font-weight: 400;
+	width: 1.5rem;
 }
 
-.Scoreboard table tr > :nth-child(1) {
-	font-weight: 400;
-	width: 1.5rem; /*48px*/
-}
-.Scoreboard table tr > :nth-child(2) {
+.Scoreboard table tr > .robot {
 	font-weight: 500;
 	text-align: left;
 }
+
 .Scoreboard .team-name {
 	display: inline-block;
 	max-width: 14rem; /* ??? */
@@ -30,19 +26,33 @@
 	text-overflow: ellipsis;
 }
 
-.Scoreboard table tr > :nth-child(2) svg { /* medal */
+.Scoreboard table tr > .robot svg { /* medal */
 	margin-left: 0.5rem; /*16px;*/
 	width: 1rem; height: 1rem;
 }
-.Scoreboard table tr > :nth-child(3) {
+
+.Scoreboard table tr > .wins {
 	width: 1.5rem;
-	text-align: right;
+}
+
+.Scoreboard table tr > .draws {
+	width: 1.5rem;
+}
+
+.Scoreboard table tr > .losses {
+	width: 1.5rem;
+}
+
+.Scoreboard table tr > .score {
+	width: 1.5rem;
+	-text-align: right;
 	font-weight: 600;
 }
-.Scoreboard table tr > :nth-child(4) {
+
+.Scoreboard table tr > .tiebreaker {
 	font-weight: 400;
 	width: 1.5rem;
-	text-align: right;
+	-text-align: right;
 	font-size: 0.7em;
 }
 

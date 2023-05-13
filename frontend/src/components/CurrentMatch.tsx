@@ -7,6 +7,7 @@ import bot3 from '../images/bot3.png';
 
 export default function CurrentMatch() {
 	return <div class='CurrentMatch'>
+		<h2>{'2023 Group A'}</h2>
 		<div class='info'>
 			<div class='robot-info side-left'>
 				<Textfit>{'Malcom Sylas Edjouma Laouari'}</Textfit>

@@ -52,6 +52,32 @@ const { title } = Astro.props;
 	li > a {
 		text-decoration: none;
 	}
+
+	table {
+		border-collapse: separate;
+		border-spacing: 0 2px;
+		width: 100%;
+	}
+
+	table thead {
+		background-color: #000; /* somehow becomes #1a1a1a idfk why */
+	}
+
+	table tr {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	table td,
+	table th {
+		width: 0;
+		-margin: 0 0.5rem;
+		padding: 0.3rem;
+	}
+
+	table .wide { /* "name" column, usually */
+		text-align: left;
+		width: 100%;
+	}
 </style>
 
 <script>

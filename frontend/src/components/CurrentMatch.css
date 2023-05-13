@@ -100,3 +100,13 @@
 .CurrentMatch .ring .robot-img.side-right {
 	transform: translateY(-50%) scaleX(-1);
 }
+
+.CurrentMatch > h2 {
+	margin: 0;
+	text-align: center;
+	position: relative;
+	background: #1a1a1a;
+	z-index: 100;
+
+	text-decoration: underline dashed white;
+}
