@@ -21,8 +21,6 @@ insert into CurrentCompetitionStatus values ('Development', 69, null);
 
 class CurrentStatus extends BaseModel
 {
-    protected static string $baseUrl = "currentStatus";
-
     public ?string $stage;
     public ?int $match;
     public ?string $livestream;

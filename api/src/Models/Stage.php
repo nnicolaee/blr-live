@@ -19,7 +19,6 @@ create table Stages (
 
 class Stage extends BaseModel
 {
-    protected static string $baseUrl = "stages";
     protected bool $brief = false;
 
     public function __construct(

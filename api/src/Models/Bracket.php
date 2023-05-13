@@ -19,8 +19,6 @@ create table BracketSlots (
 
 class Bracket extends BaseModel
 {
-    protected static string $baseUrl = "brackets";
-
     private const MAX_DEPTH = 6; // Shouldn't ever have more than 64 teams / 6 rounds in the same bracket
 
     public function __construct(

@@ -23,8 +23,6 @@ create table Matches (
 // Funny name because 'Match' clashes with the keyword :(
 class MMatch extends BaseModel
 {
-    protected static string $baseUrl = "matches";
-
     private int $score1 = 0;
     private int $score2 = 0;
     private array $games;

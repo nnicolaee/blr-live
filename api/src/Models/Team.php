@@ -15,8 +15,6 @@ create table Teams (
 
 class Team extends BaseModel
 {
-    protected static string $baseUrl = "teams";
-
     public function __construct(
         public readonly string $username,
         public string $name

@@ -19,8 +19,6 @@ create table Games (
 
 class Game extends BaseModel
 {
-    protected static string $baseUrl = "matches/games";
-
     public string $time;
 
     public function __construct(
