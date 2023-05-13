@@ -7,8 +7,9 @@ namespace BLRLive\Controllers;
 use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\{ HttpNotFoundException, HttpBadRequestException };
-use BLRLive\Models\Stage;
+use BLRLive\Models\{ Stage, Participation, Team };
 use BLRLive\REST\{ Controller, HttpRoute };
+use BLRLive\Schemas\{ CreateStageRequest, UpdateStageRequest, UpdateParticipationRequest };
 
 #[Controller('/stages')]
 class StageController
@@ -94,10 +95,18 @@ class StageController
     {
         $body = UpdateParticipationRequest::from($req->getParsedBody())
             or throw new HttpBadRequestException($req);
-        $par = Participation::get($args['stage'], $args['team'])
+        $par = Participation::getPar($args['stage'], $args['team'])
             or throw new HttpNotFoundException($req, 'Team does not participate in stage');
 
-        if(isset($body->status)) $par->status = $body->status;
+        if(isset($body->status)) {
+            $par->status = $body->status;
+
+            if($par->status == 'disqualified') {
+                // For each other team in this stage
+                // Count X = matches played
+                // Create 3-X losing matches
+            }
+        }
 
         $par->save();
         return $res->withJson($par);
@@ -106,7 +115,7 @@ class StageController
     #[HttpRoute('DELETE', '/{stage}/teams/{team}')]
     public static function deleteParticipation(Request $req, Response $res, $args)
     {
-        $par = Participation::get($args['stage'], $args['team'])
+        $par = Participation::getPar($args['stage'], $args['team'])
             or throw new HttpNotFoundException($req, 'Team does not participate in stage');
         $par->delete();
         return $res->withStatus(204);

@@ -6,10 +6,11 @@ namespace BLRLive\Controllers;
 
 use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\{ HttpNotFoundException, HttpBadRequestException };
 use BLRLive\Models\CurrentStatus;
 use BLRLive\Models\LiveEvents;
 use BLRLive\REST\{Controller, HttpRoute};
+use BLRLive\Schemas\UpdateCurrentStatusRequest;
 use BLRLive\Config;
 
 #[Controller('/currentStatus')]
@@ -43,7 +44,7 @@ class CurrentStatusController
             LiveEvents::sendEvent('currentStatus', ['livestream' => $body->livestream]);
         }
 
-        $currentStatus->save() or throw new HttpNotFoundException($req, 'Referenced objects not found');
+        $currentStatus->save();// or throw new HttpNotFoundException($req, 'Referenced objects not found');
         return $res->withJson($currentStatus);
     }
 }

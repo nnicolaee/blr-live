@@ -8,11 +8,12 @@ trait ValidatedSchema
 {
     public static function from(mixed $data): self|false
     {
-        $rc = new ReflectionClass(self);
-        $obj = new self();
+        $class = __CLASS__;
+        $rc = new \ReflectionClass($class);
+        $obj = new $class();
 
         try {
-            for ($rc->getProperties() as $rp) {
+            foreach ($rc->getProperties() as $rp) {
                 $name = $rp->getName();
 
                 // Let PHP do the type checking for us, including null, union types, everyhting :)
@@ -20,7 +21,7 @@ trait ValidatedSchema
             }
     
             return $obj;
-        } catch(Exception) {
+        } catch(\Exception) {
             return false;
         }
     }

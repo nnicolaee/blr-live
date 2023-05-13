@@ -51,8 +51,21 @@ class Team extends BaseModel
     public static function getPaginated(int $offset = 0, int $limit = 50): array // of Team
     {
         $db = Database::Connect();
-        $r = $db->execute_query('select username, name from Teams limit ? offset ?', [$limit, $offset]);
+        $r = $db->execute_query('select username, name from Teams order by name limit ? offset ?', [$limit, $offset]);
 
+        $teams = [];
+        foreach ($r as $teamRow) {
+            $teams[] = Team::fromRow($teamRow);
+        }
+
+        return $teams;
+    }
+
+    public static function getAll() : array
+    {
+        $db = Database::connect();
+
+        $r = $db->execute_query('select username, name from Teams order by name', [$limit, $offset]);
         $teams = [];
         foreach ($r as $teamRow) {
             $teams[] = Team::fromRow($teamRow);

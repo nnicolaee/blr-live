@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BLRLive\Models;
 
+use \BLRLive\Schemas\ScoreboardLine;
+
 /*
 
 create table Stages (
@@ -64,7 +66,8 @@ class Stage extends BaseModel
     public static function create(string $name): Stage
     {
         $stage = new Stage(
-            name: $name
+            name: $name,
+            bracket: null
         );
 
         $db = Database::connect();
@@ -74,11 +77,18 @@ class Stage extends BaseModel
         return $stage;
     }
 
+    public function delete(): void
+    {
+        $db = Database::connect();
+        $db->execute_query('delete from Stages where name = ?', [$this->name]);
+        $db->commit();
+    }
+
     public static function getAll(bool $brief = true): array
     {
         $db = Database::connect();
 
-        $r = $db->execute_query('select * from Stages');
+        $r = $db->execute_query('select * from Stages order by name');
         $stages = [];
         foreach ($r as $row) {
             $stage = Stage::fromRow($row);

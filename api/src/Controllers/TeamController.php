@@ -10,6 +10,7 @@ use Slim\Exception\{ HttpNotFoundException, HttpBadRequestException };
 use BLRLive\Config;
 use BLRLive\Models\Team;
 use BLRLive\REST\{ Controller, HttpRoute };
+use BLRLive\Schemas\{ CreateTeamRequest, UpdateTeamRequest };
 
 #[Controller('/teams')]
 class TeamController
@@ -17,7 +18,7 @@ class TeamController
     #[HttpRoute('POST')]
     public static function createTeam(Request $req, Response $res)
     {
-        $body = CreateTeamRequest::from($body->getParsedBody())
+        $body = CreateTeamRequest::from($req->getParsedBody())
             or throw new HttpBadRequestException($req);
 
         if ($team = Team::get($body->username)) { // Prone to a race condition but nothing mega bad should happen
