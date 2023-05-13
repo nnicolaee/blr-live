@@ -1,0 +1,16 @@
+.AdminStages {
+
+}
+
+.AdminStages ul {
+	list-style: none;
+	padding: 0;
+}
+
+.AdminStages ul li {
+	text-decoration: underline;
+}
+
+.AdminStages ul li.selected {
+	font-weight: bold;
+}

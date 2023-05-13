@@ -1,0 +1,19 @@
+---
+import WebLayout from '../layouts/WebLayout.astro';
+import AdminTeams from '../components/AdminTeams.tsx';
+import AdminStages from '../components/AdminStages.tsx';
+---
+
+<WebLayout title='Admin'>
+	<h1>Admin</h1>
+	<AdminStages client:only="preact" />
+	<AdminTeams client:only="preact" />
+</WebLayout>
+
+<style>
+	@media screen and (min-width: 960px) { /* undo UI scaling */
+		:root {
+			font-size:initial !important;
+		}
+	}
+</style>
