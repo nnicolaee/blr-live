@@ -110,41 +110,57 @@ class Stage extends BaseModel
 
     public static function addTeam(string $stage, string $team)
     {
-
         $db = Database::connect();
         $db->execute_query('insert into TeamStageParticipation (stage, team) values (?, ?)', [$stage, $team]);
-
-        $teams = $db->execute_query('select team from TeamStageParticipation where team = ?', [$team]);
-        foreach($teams as $t)
-        {
-            var_dump($t);
-        }
-
         $db->commit();
     }
 
     public static function removeTeam(string $stage, string $team)
     {
-
         $db = Database::connect();
         $db->execute_query('insert into Stages (name) values (?)', [$name]);
         $db->commit();
+    }
+
+    public function getScoreboard()
+    {
+        $pars = Participation::getForStage($this->name);
+        $scoreboard = [];
+        $db = Database::connect();
+        foreach($pars as $par) {
+            $w = $db->execute_query('select count(*) from Matches where (team1 = ? and status = \'win1\') or (team2 = ? and status = \'win2\')', [$par->team, $par->team])->fetch_array()[0];
+            $d = $db->execute_query('select count(*) from Matches where (team1 = ? or team2 = ?) and status = \'draw\'', [$par->team, $par->team])->fetch_array()[0];
+            $l = $db->execute_query('select count(*) from Matches where (team1 = ? and status = \'win2\') or (team2 = ? and status = \'win1\')', [$par->team, $par->team])->fetch_array()[0];
+
+            $gw = $db->execute_query('select count(*) from Games join Matches on Games.match_id = Matches.id where (team1 = ? and Games.status = \'win1\') or (team2 = ? and Games.status = \'win2\')', [$par->team, $par->team])->fetch_array()[0];
+            $gl = $db->execute_query('select count(*) from Games join Matches on Games.match_id = Matches.id where (team1 = ? and Games.status = \'win2\') or (team2 = ? and Games.status = \'win1\')', [$par->team, $par->team])->fetch_array()[0];
+
+            $scoreboard[] = new ScoreboardLine(
+                team: Team::get($par->team)->jsonSerialize(),
+                wins: $w,
+                draws: $d,
+                losses: $l,
+                score: 3*$w + $d,
+                tiebreaker: $gw - $gl,
+                status: $par->status
+            );
+        }
+
+        return $scoreboard;
     }
 
     public function jsonSerialize(): \BLRLive\Schemas\StageBrief|\BLRLive\Schemas\Stage
     {
         if ($this->brief) {
             return new \BLRLive\Schemas\StageBrief(
-                id: $this->id,
                 name: $this->name,
                 bracket: $this->bracket
             );
         } else {
             return new \BLRLive\Schemas\Stage(
-                id: $this->id,
                 name: $this->name,
                 bracket: $this->bracket,
-                scoreboard: [],
+                scoreboard: $this->getScoreboard(),
                 matches: []
             );
         }
