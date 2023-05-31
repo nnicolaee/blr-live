@@ -7,7 +7,9 @@ import BottomBar from '../../components/BottomBar.tsx';
 import LiveRobot from '../../components/LiveRobot.tsx';
 import LiveScoreLine from '../../components/LiveScoreLine.tsx';
 
-import { getCurrentMatch, obsSceneState } from './livestream.ts';
+import { obsSceneState } from './livestream.ts';
+import { useCurrentStatus, useStageState, BLRSSE } from '../../states.ts';
+import { useEffect } from 'preact/hooks';
 
 import './arena.css';
 
@@ -19,8 +21,17 @@ export default function LivestreamArenaScene() {
 		'DRAW': 'state-draw',
 	};
 
-	const { team1name, team2name, team1score, team2score } = getCurrentMatch();
-	const scene = obsSceneState(scene => {
+	const currentStatus = useCurrentStatus();
+	const { matches } = useStageState(currentStatus.stage);
+	const nl = {
+		username: '~',
+		name: 'NOT LOADED',
+		image: '~'
+	};
+	const currentMatch = matches.find(match => match.id == currentStatus.match) || { team1: nl, team2: nl, score1: 0, score2: 0 };
+	const { team1, team2, score1, score2 } = currentMatch;
+
+	const currentObsScene = obsSceneState(scene => {
 		// Prepare instant replay buffer from the moment the "Arena" scene is active until the moment one of the verdict scenes become active (immediately before their respective animations).
 		if(scene == 'Arena') {
 			window.obsstudio.startReplayBuffer();
@@ -30,19 +41,40 @@ export default function LivestreamArenaScene() {
 		}
 	});
 
-	return (<div class={ classes[scene] ?? '' }>
+	useEffect(() => {
+		const sse = BLRSSE();
+		sse.addEventListener('game', (e) => {
+			const data = JSON.parse(e.data);
+			console.log('game: ', data);
+			window.obsstudio.getCurrentScene(scene => {
+				console.log('Scene:', scene.name)
+				if(data.match_id == currentMatch.id && scene.name == 'Arena') {
+					console.log('ANIM!', data.status);
+					if(data.status == 'team1') {
+						window.obsstudio.setCurrentScene('WIN LEFT');
+					} else if(data.status == 'team2') {
+						window.obsstudio.setCurrentScene('WIN RIGHT');
+					} else if(data.status == 'draw') {
+						window.obsstudio.setCurrentScene('DRAW');
+					}
+				}
+			});
+		});	
+	}, []);
+
+	return (<div class={ classes[currentObsScene] ?? '' }>
 		<div id="left-curtain">
-			{ team1name } scores
+			{ team1.name } scores
 		</div>
 		<div id="left-robot">
-			<LiveRobot justimg side="left" img={robot1img} />
+			<LiveRobot justimg side="left" img={team1.image} />
 		</div>
 
 		<div id="right-curtain">
-			{ team2name } scores
+			{ team2.name } scores
 		</div>
 		<div id="right-robot">
-			<LiveRobot justimg side="right" img={robot2img} />
+			<LiveRobot justimg side="right" img={team2.image} />
 		</div>
 
 		<div id="draw-curtain">
@@ -50,8 +82,8 @@ export default function LivestreamArenaScene() {
 		</div>
 
 		<BottomBar>
-			<LiveScoreLine score={team1score} name={team1name} />
-			<LiveScoreLine score={team2score} name={team2name} />
+			<LiveScoreLine score={score1} name={team1.name} />
+			<LiveScoreLine score={score2} name={team2.name} />
 		</BottomBar>
 	</div>);
 }

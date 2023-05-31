@@ -3,7 +3,7 @@
 	border: 1px solid white;
 	border-radius: 0.75rem;
 	overflow: hidden;
-	width: 18.75rem;
+	width: 13.25rem;
 	margin: 0.5rem auto;
 	line-height: 2rem;
 }
@@ -32,7 +32,7 @@
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow-x: hidden;
-	width: 15.5rem;
+	width: 10rem;
 }
 
 .Match .line:nth-of-type(1) .score { background-color: var(--left-color-trans); }

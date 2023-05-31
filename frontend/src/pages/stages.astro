@@ -1,0 +1,9 @@
+---
+import WebLayout from '../layouts/WebLayout.astro';
+
+import StagesListView from '../components/StagesListView.tsx';
+---
+
+<WebLayout title='BattleLab Robotica stages'>
+	<StagesListView client:only="preact" />
+</WebLayout>

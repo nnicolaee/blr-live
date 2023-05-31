@@ -1,0 +1,11 @@
+.Bracket {
+	display: grid;
+	grid-template-areas:
+		"ch1 par"
+		"ch2 par";
+	align-items: center;
+}
+
+.Bracket > :nth-child(1) {
+	grid-area: par;
+}

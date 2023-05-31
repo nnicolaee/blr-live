@@ -1,0 +1,5 @@
+AuthUserFile ./.htpasswd
+AuthGroupFile /dev/null
+AuthName "Password required for admin interface"
+AuthType Basic
+Require valid-user

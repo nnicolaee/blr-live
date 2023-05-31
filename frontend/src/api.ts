@@ -22,6 +22,11 @@ export default async function api(route, method='GET', body=null) {
 			throw new Error(body.error);
 		}
 
-		return body;
+		try {
+			const resbody = await res.json();
+			return resbody;
+		} catch { // empty response
+			return null;
+		}
 	}
 }

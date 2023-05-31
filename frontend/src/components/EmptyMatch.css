@@ -1,0 +1,10 @@
+.EmptyMatch {
+	display: flex;
+	border: 1px solid white;
+	border-radius: 0.75rem;
+	width: 13.25rem;
+	margin: 0.5rem auto;
+	height: 4rem;
+	justify-content: center;
+	align-items: center;
+}

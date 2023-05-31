@@ -1,0 +1,12 @@
+.StagesListView {
+	list-style: none;
+	padding: 0;
+}
+
+.StagesListView li {
+	margin: 1rem auto;
+}
+
+.StagesListView li a {
+	text-decoration: initial;
+}

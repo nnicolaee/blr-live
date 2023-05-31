@@ -14,3 +14,16 @@
 .AdminStages ul li.selected {
 	font-weight: bold;
 }
+
+.AdminStages #matches li {
+	display: grid;
+	grid-template-areas:
+		"m cur"
+		"m del"
+		"m fin";
+	margin: 1rem;
+}
+
+.AdminStages #matches .Match {
+	grid-area: m;
+}

@@ -1,0 +1,24 @@
+.StageView > h2 {
+	margin: 0;
+	text-align: center;
+	position: relative;
+	background: #1a1a1a;
+	z-index: 100;
+
+	text-decoration: underline dashed white;
+}
+
+
+.StageView > .tables {
+	display: flex;
+	flex-direction: column;
+}
+
+
+.StageView > .tables :global(table) {
+	-background-color: #1a1a1a;
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	margin: auto;
+	max-width: 25rem;
+}

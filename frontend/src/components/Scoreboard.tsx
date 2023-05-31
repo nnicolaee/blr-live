@@ -12,7 +12,7 @@ export default function Scoreboard({ scoreboard = [], actions = {} }) {
 		<h2>Scoreboard</h2>
 		<table>
 			<thead>
-				<tr><th>#</th><th class='robot wide'>Robot</th><th>W</th><th>D</th><th>L</th><th>Score</th><th>&plusmn;</th>
+				<tr><th>#</th><th class='robot wide'>Robot</th><th title='Matches won'>W</th><th title='Matches lost'>L</th><th title='3 * Matches won'>Score</th><th title='Tiebreaker = games won - games lost'>&plusmn;</th>
 				{ Object.entries(actions).map(([name, handler]) => <th>{name}</th>) }</tr>
 			</thead>
 			<tbody>
@@ -21,7 +21,6 @@ export default function Scoreboard({ scoreboard = [], actions = {} }) {
 						<td class='pos'>{i+1}</td>
 						<td class='robot'><span class='team-name'>{line.team.name}</span> { i < 3 ? medals[i] : '' }</td>
 						<td class='wins'>{line.wins}</td>
-						<td class='draws'>{line.draws}</td>
 						<td class='losses'>{line.losses}</td>
 						<td class='score'>{line.score}</td>
 						<td class='tiebreaker'>{line.tiebreaker}</td>
