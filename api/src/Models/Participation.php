@@ -12,7 +12,8 @@ create table TeamStageParticipation (
     status enum('participant', 'qualified', 'disqualified') not null default 'participant',
 
     foreign key (stage) references Stages(name) on delete cascade,
-    foreign key (team) referenes Teams(username) on delete cascade
+    foreign key (team) references Teams(username) on delete cascade,
+    primary key (stage, team)
 );
 
 */
@@ -74,7 +75,7 @@ class Participation extends BaseModel
         );
     }
 
-    public static function fromRow(array $row) : ?Participation
+    public static function fromRow(?array $row) : ?Participation
     {
         if(!$row) {
             return null;

@@ -8,7 +8,8 @@ namespace BLRLive\Schemas;
 {
     public function __construct(
         public string $username,
-        public string $name
+        public string $name,
+        public string $image
     ) {
     }
 }

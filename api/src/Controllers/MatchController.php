@@ -8,7 +8,8 @@ use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\{ HttpNotFoundException, HttpBadRequestException };
 use BLRLive\REST\{ Controller, HttpRoute };
-use BLRLive\Models\{ Stage, Team, MMatch, Game };
+use BLRLive\Models\{ Stage, Team, MMatch, Game, LiveEvents };
+use BLRLive\Schemas\{ CreateMatchRequest, AddGameRequest };
 
 #[Controller('/matches')]
 class MatchController
@@ -24,10 +25,12 @@ class MatchController
         }
 
         $match = MMatch::create(
-            stage: $stage,
-            team1: $team1,
-            team2: $team2
+            stage: $body->stage,
+            team1: $body->team1,
+            team2: $body->team2
         );
+
+        LiveEvents::sendEvent('match', $match->jsonSerialize());
 
         return $res->withJson($match);
     }
@@ -47,24 +50,20 @@ class MatchController
         $match = MMatch::get($args['match'])
             or throw new HttpNotFoundException($req);
 
-        $body = AddMatchRequest::from($req->getParsedBody())
+        $body = AddGameRequest::from($req->getParsedBody())
             or throw new HttpBadRequestException($req);
 
         if ($body->outcome == 'team1' || $body->outcome == 'team2' || $body->outcome == 'draw') {
-            $match->addGame($outcome);
-            \BLRLive\Models\LiveEvents::sendEvent('gameOutcome', $outcome);
+            $game = $match->addGame($body->outcome);
+            LiveEvents::sendEvent('game', $game->jsonSerialize());
+        } else {
+            throw new HttpBadRequestException($req);
         }
 
-        return $res->withStatus(200);
-    }
+        LiveEvents::sendEvent('match', $match->jsonSerialize());
+        LiveEvents::sendEvent('scoreboard', $match->jsonSerialize());
 
-    #[HttpRoute('DELETE', '/{match}/games')]
-    public static function deleteMatchGame(Request $req, Response $res, $args)
-    {
-        $match = MMatch::get($args['match'])
-            or throw new HttpNotFoundException($req);
-
-        return $res->withStatus(204);
+        return $res->withStatus(200)->withJson($game);
     }
 
     #[HttpRoute('PUT', '/{match}/finished')]
@@ -73,8 +72,18 @@ class MatchController
         $match = MMatch::get($args['match'])
             or throw new HttpNotFoundException($req);
 
-        $match->status = 'finished';
+        $m = $match->jsonSerialize();
+
+        if($m->score1 > $m->score2)
+            $match->status = 'win1';
+        else if($m->score1 < $m->score2)
+            $match->status = 'win2';
+        else
+            $match->status = 'draw';
         $match->save();
+
+        LiveEvents::sendEvent('match', $match->jsonSerialize());
+        LiveEvents::sendEvent('scoreboard', $match->jsonSerialize());
 
         return $res->withJson($match);
     }
@@ -84,8 +93,9 @@ class MatchController
     {
         $match = MMatch::get($args['match'])
             or throw new HttpNotFoundException($req);
-
+        LiveEvents::sendEvent('match', ['stage' => $match->stage]);
         $match->delete();
+
         return $res->withStatus(204);
     }
 
@@ -102,7 +112,10 @@ class MatchController
     {
         $game = Game::get($args['id'])
             or throw new HttpNotFoundException($req);
+        LiveEvents::sendEvent('match', null);
+        LiveEvents::sendEvent('scoreboard', null);
         $game->delete();
+        
         return $res->withStatus(204);
     }
 }

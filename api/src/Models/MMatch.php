@@ -13,9 +13,9 @@ create table Matches (
     team2 varchar(50) not null,
     status enum('upcoming', 'win1', 'win2', 'draw') not null,
 
-    foreign key (stage) references Stages(name) on delete cascade,
-    foreign key (team1) references Teams(username) on delete cascade,
-    foreign key (team2) references Teams(username) on delete cascade
+    foreign key (stage) references TeamStageParticipation(stage) on delete cascade,
+    foreign key (team1) references TeamStageParticipation(team) on delete cascade,
+    foreign key (team2) references TeamStageParticipation(team) on delete cascade
 );
 
 */
@@ -75,17 +75,8 @@ class MMatch extends BaseModel
             'select * from Matches where id = ?',
             [intval($id)]
         )->fetch_assoc();
-        if (!$r) {
-            return null;
-        }
 
-        return new MMatch(
-            id: $r['id'],
-            stage: $r['stage'],
-            team1: $r['team1'],
-            team2: $r['team2'],
-            status: $r['status']
-        );
+        return MMatch::fromRow($r);
     }
 
     public static function exists(string $id): bool
@@ -134,17 +125,32 @@ class MMatch extends BaseModel
         $db->commit();
     }
 
+    public static function fromRow(?array $row) : ?MMatch
+    {
+        if(!$row) {
+            return null;
+        }
+
+        return new MMatch(
+            id: $row['id'],
+            stage: $row['stage'],
+            team1: $row['team1'],
+            team2: $row['team2'],
+            status: $row['status']
+        );
+    }
+
     public function jsonSerialize(): \BLRLive\Schemas\MMatch
     {
         return new \BLRLive\Schemas\MMatch(
             id: $this->id,
             stage: $this->stage,
-            team1: $this->team1,
-            team2: $this->team2,
+            team1: Team::get($this->team1)->jsonSerialize(),
+            team2: Team::get($this->team2)->jsonSerialize(),
             score1: $this->score1,
             score2: $this->score2,
             status: $this->status,
-            games: $this->games
+            games: Game::getForMatch($this->id)
         );
     }
 }

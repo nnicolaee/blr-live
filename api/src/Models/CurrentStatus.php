@@ -15,8 +15,6 @@ create table CurrentCompetitionStatus (
     foreign key (match_id) references Matches(id) on delete set null
 );
 
-insert into CurrentCompetitionStatus values ('Development', 69, null);
-
 */
 
 class CurrentStatus extends BaseModel
@@ -40,7 +38,7 @@ class CurrentStatus extends BaseModel
 
         $currentStatus = new CurrentStatus();
         $currentStatus->stage = $stage;
-        $currentStatus->match = $match;
+        $currentStatus->match = gettype($match) === 'NULL' ? null : intval($match);
         $currentStatus->livestream = $livestream;
         return $currentStatus;
     }

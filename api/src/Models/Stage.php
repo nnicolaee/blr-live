@@ -139,7 +139,32 @@ class Stage extends BaseModel
             );
         }
 
+        usort($scoreboard, function(ScoreboardLine $a, ScoreboardLine $b) {
+            if($b->score == $a->score) {
+                return $b->tiebreaker - $a->tiebreaker;
+            }
+
+            return $b->score - $a->score;
+        });
+
         return $scoreboard;
+    }
+
+    public function getMatches() : array
+    {
+        $db = Database::connect();
+        $matches = [];
+        foreach(Database::execute_query('select * from Matches where stage = ?', [$this->name]) as $row) {
+            $matches[] = MMatch::fromRow($row);
+        }
+        return $matches;
+    }
+
+    public function save() : void
+    {
+        $db = Database::connect();
+        Database::execute_query('update Stages set bracket = ? where name = ?', [$this->bracket, $this->name], $db);
+        $db->commit();
     }
 
     public function jsonSerialize(): \BLRLive\Schemas\StageBrief|\BLRLive\Schemas\Stage
@@ -154,7 +179,7 @@ class Stage extends BaseModel
                 name: $this->name,
                 bracket: $this->bracket,
                 scoreboard: $this->getScoreboard(),
-                matches: []
+                matches: $this->getMatches()
             );
         }
     }

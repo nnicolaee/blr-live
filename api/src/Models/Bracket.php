@@ -12,7 +12,7 @@ create table BracketSlots (
     parent int null,
 
     foreign key (match_id) references Matches(id) on delete set null,
-    foreign key (parent) references BracketSlot(id) on delete cascade
+    foreign key (parent) references BracketSlots(id) on delete cascade
 );
 
 */
@@ -150,6 +150,22 @@ class Bracket extends BaseModel
                 Bracket::createTree($depth - 1, $id)
             ] : []
         );
+    }
+
+    public function getStage() : ?string
+    {
+        $bracket = $this->id;
+        for($depth = 10; $bracket && $depth > 0; $depth--) {
+            $row = Database::execute_query(
+                'select name from Stages where bracket = ?',
+                [$bracket_id]
+            )->fetch_array();
+            if($row) return $row[0];
+
+            $bracket = Bracket::getSlot($bracket)->parent;
+        }
+
+        return null;
     }
 
     public function jsonSerialize(): \BLRLive\Schemas\BracketNode

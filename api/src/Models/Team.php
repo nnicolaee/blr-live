@@ -115,7 +115,8 @@ class Team extends BaseModel
     {
         return new \BLRLive\Schemas\Team(
             username: $this->username,
-            name: $this->name
+            name: $this->name,
+            image: '/images/' . urlencode($this->username) . '.png'
         );
     }
 }

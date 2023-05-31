@@ -9,6 +9,6 @@ namespace BLRLive\Schemas;
     use ValidatedSchema;
 
     public ?string $stage;
-    public ?string $match;
+    public ?int $match;
     public ?string $livestream;
 }

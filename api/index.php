@@ -17,7 +17,7 @@ use BLRLive\Controllers\{
     SSEController,
     BracketController
 };
-use BLRLive\Models\AuthModel;
+use BLRLive\Models\{ AuthModel, Database };
 
 require __DIR__ . '/vendor/autoload.php';
 

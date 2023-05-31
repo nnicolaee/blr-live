@@ -7,7 +7,7 @@ namespace BLRLive\Controllers;
 use Slim\Http\Response as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\{ HttpNotFoundException, HttpBadRequestException };
-use BLRLive\Models\{ Stage, Participation, Team };
+use BLRLive\Models\{ Stage, Participation, Team, LiveEvents };
 use BLRLive\REST\{ Controller, HttpRoute };
 use BLRLive\Schemas\{ CreateStageRequest, UpdateStageRequest, UpdateParticipationRequest };
 
@@ -61,6 +61,8 @@ class StageController
 
         if ($body->bracket) {
             $stage->bracket = $body->bracket;
+
+            LiveEvents::sendEvent("bracket", ['stage' => $stage->name]);
         }
 
         $stage->save();
@@ -83,6 +85,8 @@ class StageController
             or throw new HttpNotFoundException($req, 'Stage not found');
         $team = Team::get($args['team'])
             or throw new HttpNotFoundException($req, 'Team not found');
+
+        LiveEvents::sendEvent("scoreboard", ['stage' => $stage->name]);
 
         return $res->withJson(Participation::create(
             team: $team->username,
@@ -108,6 +112,8 @@ class StageController
             }
         }
 
+        LiveEvents::sendEvent("scoreboard", ['stage' => $args['stage']]);
+
         $par->save();
         return $res->withJson($par);
     }
@@ -118,6 +124,9 @@ class StageController
         $par = Participation::getPar($args['stage'], $args['team'])
             or throw new HttpNotFoundException($req, 'Team does not participate in stage');
         $par->delete();
+
+        LiveEvents::sendEvent("scoreboard", ['stage' => $args['stage']]);
+        
         return $res->withStatus(204);
     }
 }

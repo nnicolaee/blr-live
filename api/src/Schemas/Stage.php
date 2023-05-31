@@ -8,7 +8,7 @@ namespace BLRLive\Schemas;
 {
     public function __construct(
         public string $name,
-        public ?BracketNode $bracket,
+        public ?int $bracket,
         public array $scoreboard,
         public array $matches
     ) {

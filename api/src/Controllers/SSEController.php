@@ -30,7 +30,7 @@ class SSEController
         $silence = $max_silence; // get a ping at the very beginning
 
         while (!connection_aborted()) {
-            usleep(1000000 * $probe_time);
+            usleep((int)(1000000 * $probe_time));
 
             if (!$sub->hasEvent()) {
                 $silence += $probe_time;

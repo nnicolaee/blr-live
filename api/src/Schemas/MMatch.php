@@ -9,8 +9,8 @@ namespace BLRLive\Schemas;
     public function __construct(
         public int $id,
         public string $stage,
-        public string $team1,
-        public string $team2,
+        public Team $team1,
+        public Team $team2,
         public int $score1,
         public int $score2,
         public string $status,

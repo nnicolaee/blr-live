@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace BLRLive\Schemas;
 
-/*readonly*/ class UpdateBracketSlotRequest
+/*readonly*/ class UpdateStageRequest
 {
     use ValidatedSchema;
 
-    public ?int $match;
+    public ?int $bracket;
 }
