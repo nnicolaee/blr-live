@@ -22,12 +22,11 @@ class Game extends BaseModel
     public string $time;
 
     public function __construct(
-        public readonly int $id,
+        public /*readonly*/ int $id,
         public int $match,
         public string $status,
     ) {
-        $db = Database::connect();
-        $this->time = $db->execute_query(
+        $this->time = Database::execute_query(
             'select finish_time from Games where id = ?',
             [$id]
         )->fetch_assoc()['finish_time'];
@@ -36,9 +35,10 @@ class Game extends BaseModel
     public static function create(int $match, string $status): Game
     {
         $db = Database::connect();
-        $db->execute_query(
+        Database::execute_query(
             'insert into Games(match_id, status) values (?, ?)',
-            [$match, $status]
+            [$match, $status],
+            $db
         );
         $id = $db->insert_id;
         $db->commit();
@@ -65,8 +65,7 @@ class Game extends BaseModel
             return null;
         }
 
-        $db = Database::connect();
-        $r = $db->execute_query('select * from Games where id = ?', [$id])->fetch_assoc();
+        $r = Database::execute_query('select * from Games where id = ?', [$id])->fetch_assoc();
         if (!$r) {
             return null;
         }
@@ -76,8 +75,7 @@ class Game extends BaseModel
 
     public static function getForMatch(int $match): array
     {
-        $db = Database::connect();
-        $r = $db->execute_query('select * from Games where match_id = ?', [$match]);
+        $r = Database::execute_query('select * from Games where match_id = ?', [$match]);
 
         $games = [];
         foreach ($r as $row) {
@@ -90,7 +88,8 @@ class Game extends BaseModel
     public function delete(): void
     {
         $db = Database::connect();
-        $db->execute_query('delete from Games where id = ?', [$this->id]);
+        Database::execute_query('delete from Games where id = ?', [$this->id], $db);
+        $db->commit();
     }
 
     public function jsonSerialize(): \BLRLive\Schemas\Game

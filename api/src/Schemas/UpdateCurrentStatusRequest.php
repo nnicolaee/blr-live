@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BLRLive\Schemas;
 
-readonly class UpdateCurrentStatusRequest
+/*readonly*/ class UpdateCurrentStatusRequest
 {
     use ValidatedSchema;
 

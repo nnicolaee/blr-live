@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BLRLive\Schemas;
 
-readonly class Team
+/*readonly*/ class Team
 {
     public function __construct(
         public string $username,

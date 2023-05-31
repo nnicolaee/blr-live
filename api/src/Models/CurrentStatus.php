@@ -48,9 +48,10 @@ class CurrentStatus extends BaseModel
     public function save(): void
     {
         $db = Database::connect();
-        $db->execute_query(
+        Database::execute_query(
             'update CurrentCompetitionStatus set stage = ?, match_id = ?, livestream_url = ?',
-            [$this->stage, $this->match, $this->livestream]
+            [$this->stage, $this->match, $this->livestream],
+            $db
         );
         $db->commit();
     }

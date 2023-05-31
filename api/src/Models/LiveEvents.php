@@ -26,14 +26,17 @@ class LiveEvents
         $this->db->autocommit(true);
         $this->queue = [];
 
-        $this->lastId = $this->db->query('select id from LiveEvents order by id desc limit 1')->fetch_array()[0];
+        $a = Database::execute_query('select id from LiveEvents order by id desc limit 1', [], $this->db)->fetch_array();
+        //var_dump($a);
+        $this->lastId = $a[0];
     }
 
     private function fetch(): void
     {
-        $r = $this->db->execute_query(
+        $r = Database::execute_query(
             'select id, event, data from LiveEvents where id > ? order by id asc',
-            [$this->lastId]
+            [$this->lastId],
+            $this->db
         );
 
         foreach ($r as $row) {
@@ -63,7 +66,7 @@ class LiveEvents
     public static function sendEvent(string $event, mixed $data): void
     {
         $db = Database::connect();
-        $db->execute_query('insert into LiveEvents(event, data) values (?, ?)', [$event, json_encode($data)]);
+        Database::execute_query('insert into LiveEvents(event, data) values (?, ?)', [$event, json_encode($data)], $db);
         $db->commit();
     }
 }

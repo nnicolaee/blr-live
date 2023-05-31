@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BLRLive\Schemas;
 
-readonly class BracketNode
+/*readonly*/ class BracketNode
 {
     public function __construct(
         public int $id,

@@ -118,3 +118,6 @@ foreach ($controllers as $controllerClass) {
 }
 
 $app->run();
+
+/* Close database at the end of this request */
+Database::close();

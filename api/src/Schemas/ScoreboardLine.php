@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BLRLive\Schemas;
 
-readonly class ScoreboardLine
+/*readonly*/ class ScoreboardLine
 {
     public function __construct(
         public Team $team,

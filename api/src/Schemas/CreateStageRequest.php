@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BLRLive\Schemas;
 
-readonly class CreateStageRequest
+/*readonly*/ class CreateStageRequest
 {
     use ValidatedSchema;
     

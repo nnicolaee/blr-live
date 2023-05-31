@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BLRLive\Schemas;
 
-readonly class MMatch
+/*readonly*/ class MMatch
 {
     public function __construct(
         public int $id,

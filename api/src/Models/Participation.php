@@ -20,8 +20,8 @@ create table TeamStageParticipation (
 class Participation extends BaseModel
 {
     public function __construct(
-        public readonly string $stage,
-        public readonly string $team,
+        public /*readonly*/ string $stage,
+        public /*readonly*/ string $team,
         public string $status
     ) {
     }
@@ -29,8 +29,7 @@ class Participation extends BaseModel
     public static function create(string $stage, string $team) : Participation
     {
         $db = Database::connect();
-
-        $db->execute_query('insert into TeamStageParticipation (stage, team, status) values (?, ?, ?)', [$stage, $team, 'participant']);
+        Database::execute_query('insert into TeamStageParticipation (stage, team, status) values (?, ?, ?)', [$stage, $team, 'participant'], $db);
         $db->commit();
 
         return new Participation(
@@ -47,15 +46,13 @@ class Participation extends BaseModel
 
     public static function getPar(string $stage, string $team) : ?Participation
     {
-        $db = Database::connect();
-        return Participation::fromRow($db->execute_query('select * from TeamStageParticipation where stage = ? and team = ?', [$stage, $team])->fetch_array());
+        return Participation::fromRow(Database::execute_query('select * from TeamStageParticipation where stage = ? and team = ?', [$stage, $team])->fetch_array());
     }
 
     public static function getForStage(string $stage) : array
     {
-        $db = Database::connect();
         $pars = [];
-        foreach($db->execute_query('select * from TeamStageParticipation where stage = ?', [$stage]) as $row) {
+        foreach(Database::execute_query('select * from TeamStageParticipation where stage = ?', [$stage]) as $row) {
             $pars[] = Participation::fromRow($row);
         }
         return $pars;
@@ -64,7 +61,7 @@ class Participation extends BaseModel
     public function save() : void
     {
         $db = Database::connect();
-        $db->execute_query('update TeamStageParticipation set status = ? where stage = ? and team = ?', [$this->status, $this->stage, $this->team]);
+        Database::execute_query('update TeamStageParticipation set status = ? where stage = ? and team = ?', [$this->status, $this->stage, $this->team], $db);
         $db->commit();
     }
 
@@ -93,7 +90,7 @@ class Participation extends BaseModel
     public function delete() : void
     {
         $db = Database::connect();
-        $db->execute_query('delete from TeamStageParticipation where stage = ? and team = ?', [$this->stage, $this->team]);
+        Database::execute_query('delete from TeamStageParticipation where stage = ? and team = ?', [$this->stage, $this->team], $db);
         $db->commit();
     }
 }

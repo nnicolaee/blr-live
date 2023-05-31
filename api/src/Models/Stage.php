@@ -22,7 +22,7 @@ class Stage extends BaseModel
     protected bool $brief = false;
 
     public function __construct(
-        public readonly string $name,
+        public /*readonly*/ string $name,
         public ?int $bracket
     ) {
     }
@@ -46,8 +46,7 @@ class Stage extends BaseModel
 
     public static function get(string $name): ?Stage
     {
-        $db = Database::connect();
-        return Stage::fromRow($db->execute_query(
+        return Stage::fromRow(Database::execute_query(
             'select * from Stages where name = ?',
             [$name]
         )->fetch_assoc());
@@ -55,8 +54,7 @@ class Stage extends BaseModel
 
     public static function exists(string $name): bool
     {
-        $db = Database::connect();
-        return !is_null($db->execute_query(
+        return !is_null(Database::execute_query(
             'select name from Stages where name = ?',
             [$name]
         )->fetch_assoc());
@@ -70,7 +68,7 @@ class Stage extends BaseModel
         );
 
         $db = Database::connect();
-        $db->execute_query('insert into Stages (name) values (?)', [$name]);
+        Database::execute_query('insert into Stages (name) values (?)', [$name], $db);
         $db->commit();
 
         return $stage;
@@ -79,15 +77,13 @@ class Stage extends BaseModel
     public function delete(): void
     {
         $db = Database::connect();
-        $db->execute_query('delete from Stages where name = ?', [$this->name]);
+        Database::execute_query('delete from Stages where name = ?', [$this->name], $db);
         $db->commit();
     }
 
     public static function getAll(bool $brief = true): array
     {
-        $db = Database::connect();
-
-        $r = $db->execute_query('select * from Stages order by name');
+        $r = Database::execute_query('select * from Stages order by name');
         $stages = [];
         foreach ($r as $row) {
             $stage = Stage::fromRow($row);
@@ -99,9 +95,7 @@ class Stage extends BaseModel
 
     public static function getHavingBracket(int $bracket_id): ?Stage
     {
-        $db = Database::connect();
-
-        return Stage::fromRow($db->execute_query(
+        return Stage::fromRow(Database::execute_query(
             'select * from Stages where bracket = ?',
             [$bracket_id]
         )->fetch_assoc());
@@ -110,29 +104,29 @@ class Stage extends BaseModel
     public static function addTeam(string $stage, string $team)
     {
         $db = Database::connect();
-        $db->execute_query('insert into TeamStageParticipation (stage, team) values (?, ?)', [$stage, $team]);
+        Database::execute_query('insert into TeamStageParticipation (stage, team) values (?, ?)', [$stage, $team], $db);
         $db->commit();
     }
 
     public static function removeTeam(string $stage, string $team)
     {
         $db = Database::connect();
-        $db->execute_query('insert into Stages (name) values (?)', [$name]);
+        Database::execute_query('insert into Stages (name) values (?)', [$name], $db);
         $db->commit();
     }
 
-    public function getScoreboard()
+    public function getScoreboard() : array
     {
         $pars = Participation::getForStage($this->name);
         $scoreboard = [];
         $db = Database::connect();
         foreach($pars as $par) {
-            $w = $db->execute_query('select count(*) from Matches where (team1 = ? and status = \'win1\') or (team2 = ? and status = \'win2\')', [$par->team, $par->team])->fetch_array()[0];
-            $d = $db->execute_query('select count(*) from Matches where (team1 = ? or team2 = ?) and status = \'draw\'', [$par->team, $par->team])->fetch_array()[0];
-            $l = $db->execute_query('select count(*) from Matches where (team1 = ? and status = \'win2\') or (team2 = ? and status = \'win1\')', [$par->team, $par->team])->fetch_array()[0];
+            $w = Database::execute_query('select count(*) from Matches where stage = ? and ((team1 = ? and status = \'win1\') or (team2 = ? and status = \'win2\'))', [$this->name, $par->team, $par->team])->fetch_array()[0];
+            $d = Database::execute_query('select count(*) from Matches where stage = ? and ((team1 = ? or team2 = ?) and status = \'draw\')', [$this->name, $par->team, $par->team])->fetch_array()[0];
+            $l = Database::execute_query('select count(*) from Matches where stage = ? and ((team1 = ? and status = \'win2\') or (team2 = ? and status = \'win1\'))', [$this->name, $par->team, $par->team])->fetch_array()[0];
 
-            $gw = $db->execute_query('select count(*) from Games join Matches on Games.match_id = Matches.id where (team1 = ? and Games.status = \'win1\') or (team2 = ? and Games.status = \'win2\')', [$par->team, $par->team])->fetch_array()[0];
-            $gl = $db->execute_query('select count(*) from Games join Matches on Games.match_id = Matches.id where (team1 = ? and Games.status = \'win2\') or (team2 = ? and Games.status = \'win1\')', [$par->team, $par->team])->fetch_array()[0];
+            $gw = Database::execute_query('select count(*) from Games join Matches on Games.match_id = Matches.id where stage = ? and ((team1 = ? and Games.status = \'team1\') or (team2 = ? and Games.status = \'team2\'))', [$this->name, $par->team, $par->team])->fetch_array()[0];
+            $gl = Database::execute_query('select count(*) from Games join Matches on Games.match_id = Matches.id where stage = ? and ((team1 = ? and Games.status = \'team2\') or (team2 = ? and Games.status = \'team1\'))', [$this->name, $par->team, $par->team])->fetch_array()[0];
 
             $scoreboard[] = new ScoreboardLine(
                 team: Team::get($par->team)->jsonSerialize(),

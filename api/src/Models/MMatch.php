@@ -28,7 +28,7 @@ class MMatch extends BaseModel
     private array $games;
 
     public function __construct(
-        public readonly int $id,
+        public /*readonly*/ int $id,
         public string $stage,
         public string $team1,
         public string $team2,
@@ -49,9 +49,10 @@ class MMatch extends BaseModel
     public static function create(string $stage, string $team1, string $team2): MMatch
     {
         $db = Database::connect();
-        $db->execute_query(
+        Database::execute_query(
             'insert into Matches (stage, team1, team2, status) values (?, ?, ?, ?)',
-            [$stage, $team1, $team2, 'upcoming']
+            [$stage, $team1, $team2, 'upcoming'],
+            $db
         );
         $id = $db->insert_id;
         $db->commit();
@@ -70,8 +71,7 @@ class MMatch extends BaseModel
             return null;
         }
 
-        $db = Database::connect();
-        $r = $db->execute_query(
+        $r = Database::execute_query(
             'select * from Matches where id = ?',
             [intval($id)]
         )->fetch_assoc();
@@ -94,8 +94,7 @@ class MMatch extends BaseModel
             return false;
         }
 
-        $db = Database::connect();
-        return !is_null($db->execute_query(
+        return !is_null(Database::execute_query(
             'select id from Matches where id = ?',
             [$id]
         )->fetch_assoc());
@@ -116,9 +115,10 @@ class MMatch extends BaseModel
     public function delete(): void
     {
         $db = Database::connect();
-        $db->execute_query(
+        Database::execute_query(
             'delete from Matches where id = ?',
-            [$this->id]
+            [$this->id],
+            $db
         );
         $db->commit();
     }
@@ -126,9 +126,10 @@ class MMatch extends BaseModel
     public function save(): void
     {
         $db = Database::connect();
-        $db->execute_query(
+        Database::execute_query(
             'update Matches set status = ? where id = ?',
-            [$this->status, $this->id]
+            [$this->status, $this->id],
+            $db
         );
         $db->commit();
     }

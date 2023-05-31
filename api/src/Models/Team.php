@@ -16,7 +16,7 @@ create table Teams (
 class Team extends BaseModel
 {
     public function __construct(
-        public readonly string $username,
+        public /*readonly*/ string $username,
         public string $name
     ) {
     }
@@ -34,7 +34,7 @@ class Team extends BaseModel
         );
 
         $db = Database::connect();
-        $db->execute_query('insert into Teams (username, name) values (?, ?)', [$username, $name]);
+        Database::execute_query('insert into Teams (username, name) values (?, ?)', [$username, $name], $db);
         $db->commit();
 
         return $team;
@@ -48,8 +48,7 @@ class Team extends BaseModel
 
     public static function getPaginated(int $offset = 0, int $limit = 50): array // of Team
     {
-        $db = Database::Connect();
-        $r = $db->execute_query('select username, name from Teams order by name limit ? offset ?', [$limit, $offset]);
+        $r = Database::execute_query('select username, name from Teams order by name limit ? offset ?', [$limit, $offset]);
 
         $teams = [];
         foreach ($r as $teamRow) {
@@ -61,9 +60,7 @@ class Team extends BaseModel
 
     public static function getAll() : array
     {
-        $db = Database::connect();
-
-        $r = $db->execute_query('select username, name from Teams order by name', [$limit, $offset]);
+        $r = Database::execute_query('select username, name from Teams order by name', [$limit, $offset]);
         $teams = [];
         foreach ($r as $teamRow) {
             $teams[] = Team::fromRow($teamRow);
@@ -74,8 +71,7 @@ class Team extends BaseModel
 
     public static function get(string $username): ?Team
     {
-        $db = Database::Connect();
-        $r = $db->execute_query('select * from Teams where username = ?', [$username]);
+        $r = Database::execute_query('select * from Teams where username = ?', [$username]);
 
         return Team::fromRow($r->fetch_assoc());
     }
@@ -83,7 +79,7 @@ class Team extends BaseModel
     public static function exists(string $username): bool
     {
         $db = Database::connect();
-        return !is_null($db->execute_query(
+        return !is_null(Database::execute_query(
             'select username from Teams where username = ?',
             [$username]
         )->fetch_assoc());
@@ -92,14 +88,14 @@ class Team extends BaseModel
     public function save(): void
     {
         $db = Database::Connect();
-        $db->execute_query('update Teams set name = ? where username = ?', [$this->name, $this->username]);
+        Database::execute_query('update Teams set name = ? where username = ?', [$this->name, $this->username], $db);
         $db->commit();
     }
 
     public function delete(): void
     {
         $db = Database::Connect();
-        $db->execute_query('delete from Teams where username = ?', [$this->username]);
+        Database::execute_query('delete from Teams where username = ?', [$this->username], $db);
         $db->commit();
     }
 
