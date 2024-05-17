@@ -13,9 +13,8 @@ create table Matches (
     team2 varchar(50) not null,
     status enum('upcoming', 'win1', 'win2', 'draw') not null,
 
-    foreign key (stage) references TeamStageParticipation(stage) on delete cascade,
-    foreign key (team1) references TeamStageParticipation(team) on delete cascade,
-    foreign key (team2) references TeamStageParticipation(team) on delete cascade
+    foreign key (stage, team1) references TeamStageParticipation(stage, team) on delete cascade,
+    foreign key (stage, team2) references TeamStageParticipation(stage, team) on delete cascade
 );
 
 */
