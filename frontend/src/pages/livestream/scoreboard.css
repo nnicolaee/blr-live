@@ -5,7 +5,7 @@
 	width: 27rem;
 }
 
-.UpcomingMatches {
+.MatchList {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -21,6 +21,6 @@
 	justify-content: space-around;
 }
 
-#infos .Scoreboard, #infos .UpcomingMatches {
+#infos .Scoreboard, #infos .MatchList {
 	width: 27rem;
 }

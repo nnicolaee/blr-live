@@ -2,7 +2,7 @@ import { useState, useEffect } from 'preact/hooks';
 import api from '../api.ts';
 import { useCurrentStatus, useStageState } from '../states.ts';
 import Scoreboard from './Scoreboard.tsx';
-import UpcomingMatches from './UpcomingMatches.tsx';
+import MatchList from './MatchList.tsx';
 import MatchHeroView from './MatchHeroView.tsx';
 import Bracket from './Bracket.tsx';
 import './StageView.css';
@@ -25,7 +25,8 @@ export default function StageView() {
 				<Bracket matches={matches} bracket={bracket} /> :
 				<Scoreboard scoreboard={scoreboard} />
 			}
-			<UpcomingMatches matches={matches} />
+			<MatchList caption='Upcoming matches' matches={matches.filter(match => match.status == 'upcoming')} />
+			<MatchList caption='Previous matches' matches={matches.filter(match => match.status != 'upcoming')} />
 		</div>
 	</div>;
 }

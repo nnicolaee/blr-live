@@ -124,7 +124,7 @@ export default function StageEditor({ stageName, currentStatus }) {
 	}
 
 	return <div>
-		{ true && <code>{JSON.stringify({scoreboard, matches, bracket, currentStatus})}</code> }
+		{ true && <code style='display: block; max-height: 3em; overflow: auto'>{JSON.stringify({scoreboard, matches, bracket, currentStatus})}</code> }
 		<h2>{ stageName }</h2>
 		<button onClick={deleteStage}>Delete stage</button>
 		<button onClick={announceCurrentStage}>Set as current stage</button>

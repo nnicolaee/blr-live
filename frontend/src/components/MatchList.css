@@ -1,14 +1,14 @@
-.UpcomingMatches {
+.MatchList {
 	font-size: 1rem;
 	line-height: 1.5rem;
 }
 
-.UpcomingMatches h2 {
+.MatchList h2 {
 	text-align: center;
 	font-weight: 400;
 }
 
-.UpcomingMatches ul {
+.MatchList ul {
 	list-style: none;
 	padding: 0;
 	margin: 0;

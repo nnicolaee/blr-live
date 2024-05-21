@@ -1,6 +1,6 @@
 import Bracket from '../../components/Bracket.tsx';
 import Scoreboard from '../../components/Scoreboard.tsx';
-import UpcomingMatches from '../../components/UpcomingMatches.tsx';
+import MatchList from '../../components/MatchList.tsx';
 import BottomBar from '../../components/BottomBar.tsx';
 import api from '../../api.ts';
 import './scoreboard.css';
@@ -15,7 +15,8 @@ export default function LivestreamScoreboardScene({ stageName }) {
 	return (<>
 		<div id="infos">
 			{ bracket ? <Bracket bracket={bracket} matches={matches} /> : <Scoreboard scoreboard={ scoreboard } /> }
-			<UpcomingMatches matches={ matches.filter(match => match.status == 'upcoming') } />
+			<MatchList caption='Upcoming matches' matches={ matches.filter(match => match.status == 'upcoming') } />
+			<MatchList caption='Previous matches' matches={ matches.filter(match => match.status != 'upcoming') } />
 		</div>
 
 		<BottomBar nobg>
