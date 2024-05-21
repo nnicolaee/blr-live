@@ -92,7 +92,7 @@ export default function StageEditor({ stageName, currentStatus }) {
 	}
 
 	async function createBracket() {
-		const depth = Math.log2(scoreboard.length) | 0;
+		const depth = (Math.log2(scoreboard.length) + 0.9999) | 0;
 
 		const bracket = await api('/brackets', 'POST', { depth });
 
