@@ -101,8 +101,16 @@ export default function StageEditor({ stageName, currentStatus }) {
 		});
 	}
 
+	async function deleteBracket() {
+		await api('/brackets/' + encodeURIComponent(bracket.id), 'DELETE');
+	}
+
 	async function finishMatch(match) {
 		await api('/matches/' + match + '/finished', 'PUT');
+	}
+
+	async function unfinishMatch(match) {
+		await api('/matches/' + match + '/finished', 'DELETE');
 	}
 
 	async function createGame(outcome) {
@@ -145,7 +153,7 @@ export default function StageEditor({ stageName, currentStatus }) {
 					There are {currentMatch.games.length} games:
 					<button onClick={() => finishMatch(currentMatch.id)}>Mark match as finished!</button>
 				</> }
-			</> : <>Game is finished, with verdict: <b>{currentMatch.status}</b></> }
+			</> : <>Game is finished, with verdict: <b>{currentMatch.status}</b> <button onClick={() => unfinishMatch(currentMatch.id)}>"Un-finish" match</button></> }
 
 			<h4>Games:</h4>
 			<ul>
@@ -189,11 +197,13 @@ export default function StageEditor({ stageName, currentStatus }) {
 			</li>
 			<li>
 				<button onClick={createBracket}>Create bracket</button>
+				
 			</li>
 		</ul>
 
 		{ bracket && <>
 			<h3>Bracket</h3>
+			<button onClick={deleteBracket}>Delete bracket</button>
 
 			<div style='overflow-x: auto'>
 				<Bracket bracket={bracket} matches={matches} adminMatches={matches} />

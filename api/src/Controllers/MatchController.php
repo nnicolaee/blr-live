@@ -88,6 +88,24 @@ class MatchController
         return $res->withJson($match);
     }
 
+
+    #[HttpRoute('DELETE', '/{match}/finished')]
+    public static function unendMatch(Request $req, Response $res, $args)
+    {
+        $match = MMatch::get($args['match'])
+            or throw new HttpNotFoundException($req);
+
+        $m = $match->jsonSerialize();
+
+        $match->status = 'upcoming';
+        $match->save();
+
+        LiveEvents::sendEvent('match', $match->jsonSerialize());
+        LiveEvents::sendEvent('scoreboard', $match->jsonSerialize());
+
+        return $res->withJson($match);
+    }
+
     #[HttpRoute('DELETE', '/{match}')]
     public static function deleteMatch(Request $req, Response $res, $args)
     {

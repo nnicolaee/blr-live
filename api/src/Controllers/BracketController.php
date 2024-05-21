@@ -61,6 +61,9 @@ class BracketController
     {
         $slot = Bracket::getSlot(intval($args['bracketSlot']))
             or throw new HttpNotFoundException($req, 'Bracket slot not found');
+
+        LiveEvents::sendEvent('bracket', ['stage' => $slot->getStage()]);
+        
         $slot->delete();
         return $res->withStatus(204);
     }
