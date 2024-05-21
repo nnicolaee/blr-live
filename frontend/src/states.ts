@@ -34,13 +34,13 @@ export function useStageState(stageName) {
 	const [matches, setMatches] = useState([]);
 
 	let throttle = null;
-	function refresh(e) {
+	const refresh = () => {
+		// 1ms "timeout" to make multiple "simultaneous" state changes only lead to one refresh
 		if(throttle) clearTimeout(throttle);
 
 		throttle = setTimeout(async () => {
 			const stage = await api('/stages/' + encodeURIComponent(stageName));
-			console.dir(stage);
-
+			
 			setMatches && setMatches(stage.matches);
 			setScoreboard && setScoreboard(stage.scoreboard);
 
@@ -52,19 +52,28 @@ export function useStageState(stageName) {
 			}
 
 			throttle = null;
-		}, 100);
+		}, 1);
 	}
 
 	useEffect(async () => {
 		refresh();
 	}, [stageName]);
 
-	useEffect(async () => {
+	useEffect(() => {
 		const es = BLRSSE();
+		console.log('adding ' + stageName);
 		es.addEventListener('scoreboard', refresh);
 		es.addEventListener('bracket', refresh);
 		es.addEventListener('match', refresh);
-	}, []);
+
+		// Cleanup
+		return () => {
+			console.log('removing ' + stageName);
+			es.removeEventListener('scoreboard', refresh);
+			es.removeEventListener('bracket', refresh);
+			es.removeEventListener('match', refresh);
+		}
+	}, [stageName]);
 
 	return { bracket, scoreboard, matches };
 }
